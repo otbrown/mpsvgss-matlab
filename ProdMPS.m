@@ -10,7 +10,7 @@
 % stateArray		: column vector containing states i.e. [1; 0; 0; 1; 0; ...]
 % HILBY			: dimension of Hilbert space on each site i.e. HILBY = 2 for a spin-half system
 
-function [matrices] = ProdMPS(stateArray,HILBY,COMPRESS)
+function [matrices] = ProdMPS(stateArray, HILBY, COMPRESS)
 
 	% INPUT CHECK
 	if size(stateArray,2) > 1
@@ -42,8 +42,6 @@ function [matrices] = ProdMPS(stateArray,HILBY,COMPRESS)
 	matrices{1}(:,:,stateArray(1)) = aOne;
 	matrices{L}(:,:,stateArray(L)) = aL;
 
-	%[matrices{2:(L-1)}] = deal(zeros(2,2,HILBY));
-	
 	rowSize = 2;
 	if L == 3
 		colSize = 2;
