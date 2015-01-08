@@ -14,7 +14,7 @@
 % braMPS		: the conjugate (bra) matrix product state		< bra | OPERATOR | ket >
 % ketMPS		: the ket matrix product state
 
-[ expectation ] = NNExp(HILBY, siteOp, interOp, braMPS, ketMPS)
+function [ expectation ] = NNExp(HILBY, siteOp, interOp, braMPS, ketMPS)
 	L = size(ketMPS,1);			% constant gathering
 	chain = 1 : 1 : L;			% allocations
 	route = chain;	
