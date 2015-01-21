@@ -29,11 +29,11 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 			opColMax = OPCOUNT - 1;
 		end
 
-		B = mps{site};
-		conjB = cat(3, ctranspose( mps{site}(:, :, 1) ), ctranspose( mps{site}(:, :, 2) ) );
+		B = mps{site}
+		conjB = cat(3, ctranspose( mps{site}(:, :, 1) ), ctranspose( mps{site}(:, :, 2) ) )
 
-		rowMax = size(B, 1);
-		colMax = size(B, 2);
+		rowMax = size(B, 1)
+		colMax = size(B, 2)
 	
 		rightBlock = sym( zeros(colMax, OPCOUNT, colMax) );		% SYM FOR DEBUG PURPOSES ONLY
   
@@ -53,7 +53,7 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 									WFB = WFB + mpo{mpodex}(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
 								end	% opRow
 							end	% ketState
-							BWFB = BWFB + conjB(conjRow, opCol + 1, col) * WFB;
+							BWFB = BWFB + conjB(conjRow, opCol + 1, col) * WFB
 						end	% conjCol
 					end	% braState
 					rightBlock(conjRow, opCol + 1, col) = rightBlock(conjRow, opCol + 1, col) + BWFB;
@@ -61,6 +61,6 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 			end	%opCol
 		end	%conjRow
 		
-		inner = rightBlock
+		inner = rightBlock;
 	end	% site  
 end	% function
