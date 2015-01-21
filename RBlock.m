@@ -29,37 +29,37 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 			opColMax = OPCOUNT - 1;
 		end
 
-		B = mps{site}
-		conjB = cat(3, ctranspose( mps{site}(:, :, 1) ), ctranspose( mps{site}(:, :, 2) ) )
+		B = mps{site};
+		conjB = cat(3, ctranspose( mps{site}(:, :, 1) ), ctranspose( mps{site}(:, :, 2) ) );
 
-		rowMax = size(B, 1)
-		colMax = size(B, 2)
+		rowMax = size(B, 1);
+		colMax = size(B, 2);
 	
-		rightBlock = sym( zeros(colMax, OPCOUNT, colMax) );		% SYM FOR DEBUG PURPOSES ONLY
+		rightBlock = sym( zeros(rowMax, OPCOUNT, rowMax) );		% SYM FOR DEBUG PURPOSES ONLY
   
-		for conjRow = 1 : 1 : colMax
+		for row = 1 : 1 : rowMax
 			for opCol = 0 : 1 : opColMax
-				for col = 1 : 1 : colMax
+				for conjCol = 1 : 1 : rowMax
 					BWFB = 0;
-					for braState = 1 : 1 : HILBY
-						for conjCol = 1 : 1 : rowMax
+					for ketState = 1 : 1 : HILBY
+						for col = 1 : 1 : colMax
 							WFB = 0;
-							for ketState = 1 : 1 : HILBY
+							for braState = 1 : 1 : HILBY
 								for opRow = 0 : 1 : opRowMax
 									FB = 0;
-									for row = 1 : 1 : rowMax
-										FB = FB + inner(conjCol, opRow + 1, row) * B(row, col, ketState);
+									for conjRow = 1 : 1 : colMax
+										FB = FB + inner(conjRow, opRow + 1, col) * conjB(conjRow, conjCol, braState);
 									end
-									WFB = WFB + mpo{mpodex}(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
+									WFB = WFB + mpo{mpodex}(opRow * HILBY + ketState, opCol * HILBY + braState) * FB;
 								end	% opRow
-							end	% ketState
-							BWFB = BWFB + conjB(conjRow, opCol + 1, col) * WFB
-						end	% conjCol
-					end	% braState
-					rightBlock(conjRow, opCol + 1, col) = rightBlock(conjRow, opCol + 1, col) + BWFB;
-				end 	% col
+							end	% braState
+							BWFB = BWFB + B(row, col, ketState) * WFB;
+						end	% col
+					end	% ketState
+					rightBlock(row, opCol + 1, conjCol) = rightBlock(row, opCol + 1, conjCol) + BWFB;
+				end 	% conjCol
 			end	%opCol
-		end	%conjRow
+		end	% row
 		
 		inner = rightBlock;
 	end	% site  
