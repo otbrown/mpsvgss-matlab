@@ -1,7 +1,9 @@
 % RBlock.m
 % Oliver Thomson Brown
 % 2015-01-15
-% DOCSTRING!
+%
+% RETURN:
+% rightBlock	:  
 
 function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 
