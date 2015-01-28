@@ -2,8 +2,16 @@
 % Oliver Thomson Brown
 % 2015-01-15
 %
-% RETURN:
-% rightBlock	:  
+% [RETURN]
+% rightBlock	: 3-d double array which contains contraction of sites right of the target site 
+%
+% [ARGUMENTS]
+% mps		: L by 1 cell array containing matrix product state for the system, indexed as mps{site}(:,:,local_state)
+% mpo		: 3 by 1 cell array containing matrix product operator, mpo{1} for first site, mpo{2} for bulk sites, mpo{3} for last site
+% TARGET	: double, integer value -- target site for update during variational search
+%
+% *** IMPORTANT ***
+% For ease of referencing operators are ordered with <0|operator|0> as the top left element!
 
 function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 
