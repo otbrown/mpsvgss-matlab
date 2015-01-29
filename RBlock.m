@@ -23,8 +23,6 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 	inner = ones(2, OPCOUNT, 2);
 
 	for site = L : -1 : TARGET + 1
-		disp(site);	% DEBUG
-				
 		if site == L		% sets matrix product operator choice and sizes
 			mpodex = 3;
 			opRowMax = OPCOUNT - 1;
@@ -45,8 +43,9 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 		rowMax = size(B, 1);
 		colMax = size(B, 2);
 	
-		rightBlock = sym( zeros(rowMax, OPCOUNT, rowMax) );		% SYM FOR DEBUG PURPOSES ONLY
-  
+		%rightBlock = sym( zeros(rowMax, OPCOUNT, rowMax) );		% SYM FOR DEBUG PURPOSES ONLY
+		rightBlock = zeros(rowMax, OPCOUNT, rowMax);  
+
 		for row = 1 : 1 : rowMax
 			for opRow = 0 : 1 : opRowMax
 				for conjCol = 1 : 1 : rowMax
@@ -72,5 +71,6 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 		end	% row
 		
 		inner = rightBlock;
+		fprintf('site %d contracted\n', site);
 	end	% site  
 end	% function
