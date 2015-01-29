@@ -21,7 +21,6 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 	inner = ones(1, OPCOUNT, 1);	% initialise '0th site'
 
 	for site = 1 : 1 : TARGET - 1
-		disp(site);		%DEBUG!
 		if site == 1		% select correct MPO matrix
 			mpodex = 1;
 			opRowMax = 0;
@@ -42,7 +41,8 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 		rowMax = size(A, 1);
 		colMax = size(A, 2);
 
-		leftBlock = sym(zeros(colMax, OPCOUNT, colMax));	% REMOVE SYM WHEN FINISHED -- DEBUG!
+		%leftBlock = sym(zeros(colMax, OPCOUNT, colMax));	% REMOVE SYM WHEN FINISHED -- DEBUG!
+		leftBlock = zeros(colMax, OPCOUNT, colMax);
 
 		for conjRow = 1 : 1 : colMax				% SUMMATIONS ORDERED AS PRESENTED IN SCHOLLWOECK p65
 			for opCol = 0 : 1 : opColMax
@@ -68,6 +68,7 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 			end		%opCol
 		end		% conjRow
 		inner = leftBlock;
+		fprintf('site %d contracted\n', site);
 	end		% site
 
 end		% function
