@@ -17,7 +17,7 @@ function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 		conjM(:, :, localState) = ctranspose( M(:, :, localState) );
 	end
 
-	opCount = ( length(mpo{1} / HILBY ) - 1;
+	opCount = ( length(mpo{1}) / HILBY ) - 1;
 	
 	if TARGET == 1
 		mpodex = 1;
@@ -42,8 +42,8 @@ function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 				for col = 1 : 1 : colMax
 					for conjRow = 1 : 1 : colMax
 						for conjCol = 1 : 1 : rowMax
-							for opRow = 1 : 1 : opRowMax
-								for opCol = 1 : 1 : opColMax
+							for opRow = 0 : 1 : opRowMax
+								for opCol = 0 : 1 : opColMax
 									expectationValue = expectationValue + leftBlock(conjRow, opRow + 1, row) ...
 										* mpo{mpodex}(opRow * HILBY + braState, opCol * HILBY + ketState) ...
 										* rightBlock(conjCol, opCol + 1, col) * conjM(conjRow, conjCol, braState) ...
