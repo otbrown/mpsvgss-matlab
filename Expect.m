@@ -1,38 +1,60 @@
 % Expect.m
-% a function to calculate the expectation value of a matrix product state
-% contracts alternately through physical indices chain then virtual indices at each site
+% function to calculate the expectation value of an MPO over an MPS
 % Oliver Thomson Brown
-% 21/10/2014
+% 15-01-29
+% DOCSTRING!
 
-% [RETURN]
-% expectation		: the result of the calculation, this may either be a scalar, vector, or matrix, depending on the route through the chain
+function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 
-% [INPUT]
-% braMPS		: cell array containing the conjugate MPS coefficient matrices
-% ketMPS		: cell array containing the MPS coefficient matrices
-% operator		: cell array containing the operator at each site
-% route			: row vector containing the route through the chain, i.e. route = 1:1:L
+	% TASHA YAR
+	L = size(mps, 1);
 
-function expectation = Expect(braMPS, ketMPS, operator, route)
-	threshold = 1E-14; 		% numerical error threshold
+	M = mps{TARGET};
+	[rowMax, colMax, HILBY] = size(M);
 
-	% CONSTANT GATHERING
-	L = size(ketMPS,1);
-	HILBY = size(ketMPS{1},3);
+	conjM = zeros(colMax, rowMax, HILBY);
+	for localState = 1 : 1 : HILBY
+		conjM(:, :, localState) = ctranspose( M(:, :, localState) );
+	end
 
-	% CONTRACTION
-	inner = 1;			% <braMPS|ketMPS> =  M'_L ... M'_1 * M_1 ... M_L so code contracts in this manner, keeping track of what's in the middle!
-	for site = route;
-		outer = 0;
-		for conjState = 1:1:HILBY
-			for state = 1:1:HILBY
-				opRow = HILBY + 1 - conjState;
-				opCol = HILBY + 1 - state;
-				outer = outer + operator{site}(opRow,opCol) * ctranspose( braMPS{site}(:,:,conjState) ) * inner * ketMPS{site}(:,:,state);
+	opCount = ( length(mpo{1} / HILBY ) - 1;
+	
+	if TARGET == 1
+		mpodex = 1;
+		opRowMax = 0;
+		opColMax = opCount;
+	elseif TARGET == L
+		mpodex = 3;
+		opRowMax = opCount;
+		opColMax = 0;
+	else
+		mpodex = 2;
+		opRowMax = opCount;
+		opColMax = opCount;
+	end
+
+	% CALCULATION BEGINS
+	expectationValue = 0;
+	
+	for braState = 1 : 1 : HILBY
+		for ketState = 1 : 1 : HILBY
+			for row = 1 : 1 : rowMax
+				for col = 1 : 1 : colMax
+					for conjRow = 1 : 1 : colMax
+						for conjCol = 1 : 1 : rowMax
+							for opRow = 1 : 1 : opRowMax
+								for opCol = 1 : 1 : opColMax
+									expectationValue = expectationValue + leftBlock(conjRow, opRow + 1, row) ...
+										* mpo{mpodex}(opRow * HILBY + braState, opCol * HILBY + ketState) ...
+										* rightBlock(conjCol, opCol + 1, col) * conjM(conjRow, conjCol, braState) ...
+										* M(row, col, ketState);
+								end
+							end
+						end
+					end
+				end
 			end
 		end
-		outer(abs(outer) < threshold) = 0;		% stability measure
-		inner = outer;
 	end
-	expectation = outer;
+
 end
