@@ -66,7 +66,7 @@ function [matrices] = LMPS(init, HILBY, COMPRESS, L, SPACE)
 
 	% LAST SITE
 	for sigma = 1 : HILBY
-		matrices{L}(:, :, (HILBY - sigma + 1) ) = chain(1:2, sigma);   		
+		matrices{L}(:, :, (HILBY - sigma + 1) ) = chain(1:2, sigma);
 	end
 
 	fprintf('site %d constructed\n', L);		% progress indicator
