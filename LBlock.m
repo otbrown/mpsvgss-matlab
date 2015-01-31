@@ -36,10 +36,14 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 		end
 
 		A = mps{site};
-		conjA = cat(3, ctranspose(mps{site}(:,:,1)), ctranspose(mps{site}(:,:,2)));
 		
 		rowMax = size(A, 1);
 		colMax = size(A, 2);
+
+		conjA = zeros(colMax, rowMax, HILBY);
+		for localState = 1 : 1 : HILBY
+			conjA(:, :, localState) = ctranspose( A(:, :, localState) );
+		end
 
 		%leftBlock = sym(zeros(colMax, OPCOUNT, colMax));	% REMOVE SYM WHEN FINISHED -- DEBUG!
 		leftBlock = zeros(colMax, OPCOUNT, colMax);
