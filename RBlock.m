@@ -38,10 +38,14 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 		end
 
 		B = mps{site};
-		conjB = cat(3, ctranspose( mps{site}(:, :, 1) ), ctranspose( mps{site}(:, :, 2) ) );
-
+		
 		rowMax = size(B, 1);
 		colMax = size(B, 2);
+
+		conjB = zeros(colMax, rowMax, HILBY);
+		for localState = 1 : 1 : HILBY
+			conjB(:, :, localState) = ctranspose( B(:,:,localState) );
+		end
 	
 		%rightBlock = sym( zeros(rowMax, OPCOUNT, rowMax) );		% SYM FOR DEBUG PURPOSES ONLY
 		rightBlock = zeros(rowMax, OPCOUNT, rowMax);  
@@ -60,16 +64,15 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 										FB = FB + inner(conjRow, opCol + 1, col) * conjB(conjRow, conjCol, braState);
 									end
 									WFB = WFB + mpo{mpodex}(opRow * HILBY + ketState, opCol * HILBY + braState) * FB;
-								end	% opRow
+								end	% opCol
 							end	% braState
 							BWFB = BWFB + B(row, col, ketState) * WFB;
 						end	% col
 					end	% ketState
 					rightBlock(row, opRow + 1, conjCol) = rightBlock(row, opRow + 1, conjCol) + BWFB;
 				end 	% conjCol
-			end	%opCol
+			end	%opRow
 		end	% row
-		
 		inner = rightBlock;
 		fprintf('site %d contracted\n', site);
 	end	% site  
