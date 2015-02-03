@@ -20,9 +20,15 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 	HILBY = size(mps{L}, 3);
 	OPCOUNT = size(mpo{3}, 1) / HILBY;
 
-	inner = ones(2, OPCOUNT, 2);
+	if TARGET == 0
+		inner = ones(1, OPCOUNT, 1);
+	else
+		targRow = size( mps{TARGET}, 1 );
+		targCol = size( mps{TARGET}, 2 );
+		inner = ones(targRow, OPCOUNT, targRow);
+	end
 
-	for site = L : -1 : TARGET + 1
+	for site = TARGET + 1 : 1 : L
 		if site == L		% sets matrix product operator choice and sizes
 			mpodex = 3;
 			opRowMax = OPCOUNT - 1;
@@ -42,14 +48,17 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 		rowMax = size(B, 1);
 		colMax = size(B, 2);
 
+		fprintf('site %d rowMax = %d\n', site, rowMax);
+		fprintf('site %d colMax = %d\n', site, colMax);
+
 		conjB = zeros(colMax, rowMax, HILBY);
 		for localState = 1 : 1 : HILBY
 			conjB(:, :, localState) = ctranspose( B(:,:,localState) );
 		end
 	
 		%rightBlock = sym( zeros(rowMax, OPCOUNT, rowMax) );		% SYM FOR DEBUG PURPOSES ONLY
-		rightBlock = zeros(rowMax, OPCOUNT, rowMax);  
-
+		rightBlock = zeros(colMax, OPCOUNT, colMax);  
+%{
 		for row = 1 : 1 : rowMax
 			for opRow = 0 : 1 : opRowMax
 				for conjCol = 1 : 1 : rowMax
@@ -73,6 +82,31 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 				end 	% conjCol
 			end	%opRow
 		end	% row
+%}
+
+		for conjRow = 1 : 1 : colMax				% SUMMATIONS ORDERED AS PRESENTED IN SCHOLLWOECK p65
+			for opCol = 0 : 1 : opColMax
+				for col = 1 : 1 : colMax
+					BWFB = 0;
+					for braState = 1 : 1 : HILBY
+						for conjCol = 1 : 1 : rowMax
+							WFB = 0;
+							for ketState = 1 : 1 : HILBY
+								for opRow = 0 : 1 : opRowMax
+									FB = 0;
+									for row = 1 : 1 : rowMax
+										FB = FB + inner(conjCol, opRow + 1, row) * B(row, col, ketState);
+									end
+									WFB = WFB + mpo{mpodex}(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
+								end
+							end
+							BWFB = BWFB + conjB(conjRow, conjCol, braState) * WFB;
+						end		% conjCol
+					end 		% braState
+					rightBlock(conjRow, opCol + 1, col) = rightBlock(conjRow, opCol + 1, col) + BWFB;
+				end		% col
+			end		%opCol
+		end		% conjRow
 		inner = rightBlock;
 		fprintf('site %d contracted\n', site);
 	end	% site  
