@@ -72,7 +72,7 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 			end		%opCol
 		end		% conjRow
 		inner = leftBlock;
-		fprintf('site %d contracted\n', site);
+	%	fprintf('site %d contracted\n', site);
 	end		% site
 
 end		% function

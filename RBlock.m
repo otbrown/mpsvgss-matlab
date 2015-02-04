@@ -48,9 +48,6 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 		rowMax = size(B, 1);
 		colMax = size(B, 2);
 
-		fprintf('site %d rowMax = %d\n', site, rowMax);
-		fprintf('site %d colMax = %d\n', site, colMax);
-
 		conjB = zeros(colMax, rowMax, HILBY);
 		for localState = 1 : 1 : HILBY
 			conjB(:, :, localState) = ctranspose( B(:,:,localState) );
@@ -108,6 +105,6 @@ function [ rightBlock ] = RBlock(mps, mpo, TARGET)
 			end		%opCol
 		end		% conjRow
 		inner = rightBlock;
-		fprintf('site %d contracted\n', site);
+%		fprintf('site %d contracted\n', site);
 	end	% site  
 end	% function
