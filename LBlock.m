@@ -1,5 +1,5 @@
 % LBlock.m
-% function which
+% function which contracts tensor network with some matrix product operator from the left side of the network
 % Oliver Thomson Brown
 % 2015-01-08
 % 
@@ -12,14 +12,11 @@
 %	TARGET		:	constant int, contains target site	
 
 function [ leftBlock ] = LBlock(mps, mpo, TARGET)
-
 	% pull data from inputs
 	L = size(mps, 1);
 	HILBY = size(mps{1}, 3);
 	OPCOUNT = size(mpo{1}, 2) / HILBY;
 	
-	inner = ones(1, OPCOUNT, 1);	% initialise '0th site'
-
 	for site = 1 : 1 : TARGET - 1
 		if site == 1		% select correct MPO matrix
 			mpodex = 1;
@@ -45,8 +42,7 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 			conjA(:, :, localState) = ctranspose( A(:, :, localState) );
 		end
 
-		%leftBlock = sym(zeros(colMax, OPCOUNT, colMax));	% REMOVE SYM WHEN FINISHED -- DEBUG!
-		leftBlock = zeros(colMax, OPCOUNT, colMax);
+		leftBlock = zeros(colMax, colMax, OPCOUNT);
 
 		for conjRow = 1 : 1 : colMax				% SUMMATIONS ORDERED AS PRESENTED IN SCHOLLWOECK p65
 			for opCol = 0 : 1 : opColMax
@@ -59,7 +55,11 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 								for opRow = 0 : 1 : opRowMax
 									FA = 0;
 									for row = 1 : 1 : rowMax
-										FA = FA + inner(conjCol, opRow + 1, row) * A(row, col, ketState);
+										if site == 1
+											FA = FA + A(row, col, ketState);
+										else
+											FA = FA + inner(conjCol, row, opRow + 1) * A(row, col, ketState);
+										end
 									end
 									WFA = WFA + mpo{mpodex}(opRow * HILBY + braState, opCol * HILBY + ketState) * FA;
 								end
@@ -67,7 +67,7 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 							AWFA = AWFA + conjA(conjRow, conjCol, braState) * WFA;
 						end		% conjCol
 					end 		% braState
-					leftBlock(conjRow, opCol + 1, col) = leftBlock(conjRow, opCol + 1, col) + AWFA;
+					leftBlock(conjRow, col, opCol + 1) = leftBlock(conjRow, col, opCol + 1) + AWFA;
 				end		% col
 			end		%opCol
 		end		% conjRow
