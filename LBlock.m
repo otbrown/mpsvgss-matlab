@@ -55,7 +55,7 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 								for opRow = 0 : 1 : opRowMax
 									FA = 0;
 									for row = 1 : 1 : rowMax
-										if site == 1
+										if site == 1 
 											FA = FA + A(row, col, ketState);
 										else
 											FA = FA + inner(conjCol, row, opRow + 1) * A(row, col, ketState);
