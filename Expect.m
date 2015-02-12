@@ -10,27 +10,27 @@ function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 	L = size(mps, 1);
 
 	M = mps{TARGET};
-	[rowMax, colMax, HILBY] = size(M);
+	[rowMax, colMax, HILBY] = size(M);	
 
 	conjM = zeros(colMax, rowMax, HILBY);
 	for localState = 1 : 1 : HILBY
 		conjM(:, :, localState) = ctranspose( M(:, :, localState) );
 	end
 
-	opCount = ( length(mpo{1}) / HILBY ) - 1;
+	opCount = length(mpo{1}) / HILBY ;
 	
-	if TARGET == 1
+	if TARGET == 1			% select correct mpo
 		mpodex = 1;
 		opRowMax = 0;
-		opColMax = opCount;
+		opColMax = opCount - 1;
 	elseif TARGET == L
 		mpodex = 3;
-		opRowMax = opCount;
+		opRowMax = opCount - 1;
 		opColMax = 0;
 	else
 		mpodex = 2;
-		opRowMax = opCount;
-		opColMax = opCount;
+		opRowMax = opCount - 1;
+		opColMax = opCount - 1;
 	end
 
 	% CALCULATION BEGINS
@@ -44,10 +44,10 @@ function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 						for conjCol = 1 : 1 : rowMax
 							for opRow = 0 : 1 : opRowMax
 								for opCol = 0 : 1 : opColMax
-									expectationValue = expectationValue + leftBlock(conjRow, opRow + 1, row) ...
-										* mpo{mpodex}(opRow * HILBY + braState, opCol * HILBY + ketState) ...
-										* rightBlock(conjCol, opCol + 1, col) * M(row, col, ketState) ...
-										* conjM(conjRow, conjCol, braState);
+									expectationValue = expectationValue + leftBlock( conjCol, row, opRow + 1) ...
+										* mpo{mpodex}( opRow * HILBY + braState, opCol * HILBY + ketState) ...
+										* rightBlock( conjRow, col, opCol + 1) * conjM( conjRow, conjCol, braState) ...
+										* M( row, col, ketState); 
 								end
 							end
 						end
@@ -55,6 +55,5 @@ function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 				end
 			end
 		end
-	end
-
+	end	
 end
