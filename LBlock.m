@@ -7,8 +7,8 @@
 %	leftBlock	:	double array, contains contraction from first site through to site left of target
 %
 %	[INPUTS]
-%	mps			:	cell array, contains matrix product state
-%	mpo			:	cell array, contains matrix product operator mpo{1} is first site op, mpo{2} is bulk site op, mpo{3} is last site op
+%	mps		:	cell array, contains matrix product state
+%	mpo		:	cell array, contains matrix product operator mpo{1} is first site op, mpo{2} is bulk site op, mpo{3} is last site op
 %	TARGET		:	constant int, contains target site	
 
 function [ leftBlock ] = LBlock(mps, mpo, TARGET)
