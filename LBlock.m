@@ -12,6 +12,10 @@
 %	TARGET		:	constant int, contains target site	
 
 function [ leftBlock ] = LBlock(mps, mpo, TARGET)
+	% protection
+	if TARGET == 1
+		leftBlock = 1;
+	else
 	% pull data from inputs
 	L = size(mps, 1);
 	HILBY = size(mps{1}, 3);
@@ -74,5 +78,6 @@ function [ leftBlock ] = LBlock(mps, mpo, TARGET)
 		inner = leftBlock;
 	%	fprintf('site %d contracted\n', site);
 	end		% site
-
+	
+	end	% if statement in case TARGET == 1
 end		% function
