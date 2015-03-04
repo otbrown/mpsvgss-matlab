@@ -4,12 +4,7 @@
 % 2015-03-04
 % DOCSTRING!
 
-% DEBUG
-HILBY = 2;
-L = 5;
-COMPRESS = 0;
-
-%function [ complexMPS ] = CompMPS( HILBY, L, COMPRESS )
+function [ complexMPS ] = CompMPS( HILBY, L, COMPRESS )
 	if COMPRESS == 0
 		COMPRESS = Inf;
 	end
@@ -39,10 +34,5 @@ COMPRESS = 0;
 	end
 
 	% Normalisation
-	complexMPS = Can(complexMPS, 1 : 1 : L - 1, 'L');
-	impo = cell(3,1);
-	[impo{:}] = deal(eye(2));
-	lNorm = LBlock(complexMPS, impo, L);
-	norm = Expect(complexMPS, impo, lNorm, 1, L);
-
-%end
+	complexMPS = MPSNorm(complexMPS);
+end
