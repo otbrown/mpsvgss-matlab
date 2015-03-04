@@ -5,6 +5,11 @@
 function [ rightBlock ] = RBlock( mps, mpo, TARGET )
 	% pull data from inputs
 	L = size( mps, 1 );
+
+	if TARGET == L		% protection
+		rightBlock = 1;
+	else
+
 	HILBY = size( mps{L}, 3);
 	OPCOUNT = size( mpo{3}, 1) / HILBY;
 
@@ -65,4 +70,5 @@ function [ rightBlock ] = RBlock( mps, mpo, TARGET )
 		inner = rightBlock;
 		%fprintf('site %d contracted\n', site);
 	end	%site
+	end	% if in case TARGET == L
 end	%function
