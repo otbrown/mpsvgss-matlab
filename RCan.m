@@ -45,7 +45,7 @@ function [rmps] = RCan(mps, route)
 		
 		rmps{site-1} = cat(3, N(1:rowLim,1:colLim,1), N(1:rowLim,1:colLim,2));
 
-		fprintf('site %d right-normalised\n', site);
+		%fprintf('site %d right-normalised\n', site);
 	end
 
 end
