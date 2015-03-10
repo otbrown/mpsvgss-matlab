@@ -1,8 +1,18 @@
 % Expect.m
-% function to calculate the expectation value of an MPO over an MPS
+% function to calculate the expectation value of a mixed canonical MPO over an MPS
+% currently only allows for the bra and ket mps to be the same, but this will be changed
 % Oliver Thomson Brown
 % 15-01-29
-% DOCSTRING!
+% 
+% [RETURN]
+% expectationValue	: scalar double, contains the full contraction through a tensor network including a matrix product operator
+%
+% [INPUTS]
+% mps			: cell array, contains the matrix product state
+% mpo			: 3 * 1 cell array, contains the matrix product operator -- mpo{1} first site mpo, mpo{2} bulk site mpo, mpo{3} last site mpo
+% leftBlock		: contains the tensor network contraction from the first site up to the target site
+% rightBlock		: contains the tensor network contraction from the last site up to the target site
+% TARGET 		: int, the target site -- the mps should be left-normalised from the first site to this one, and right-normalised from the last site to this one
 
 function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 
