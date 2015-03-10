@@ -1,68 +1,17 @@
 % EffH.m
 % Oliver Thomson Brown
 % 2015-03-02
-% DOCSTRING!
-
-%{
-close all
-clear all
-clc
-
-HILBY = 2;
-L = 5;
-COMPRESS = 0;
-TARGET = 1;
-
-mps = CompMPS(HILBY, L, COMPRESS);
-
-% GENERATE AN MPO
-
-om = 20;
-J = 5;
-
-I2 = eye(2);                    % basis blocks
-Z2 = zeros(2);
-spinUp = [0, 0; 1, 0];
-spinDown = [0, 1; 0, 0];
-spinCount = spinUp * spinDown;
-spinZi = spinUp * spinDown - spinDown * spinUp;
-
-W1 = [ om * spinCount, -J * spinDown, -J * spinUp, I2 ];        % mpo matrices, constructed from block matrices
-Wi = [ I2, Z2, Z2, Z2; spinUp, Z2, Z2, Z2; spinDown, Z2, Z2, Z2; om * spinCount, -J * spinDown, -J * spinUp, I2 ];
-WL = [ I2; spinUp; spinDown; om * spinCount ];
-
-%W1 = [ om * spinCount, J * spinZi, I2 ];
-%Wi = [ I2, Z2, Z2; spinZi, Z2, Z2; om * spinCount, J * spinZi, I2];
-%WL = [ I2; spinZi; om * spinCount];
-
-mpo = cell(3,1);
-
-mpo{1} = W1;
-mpo{2} = Wi;
-mpo{3} = WL;
-
-impo = cell(3,1);               % Identity MPO
-impo{1} = I2;
-impo{2} = I2;
-impo{3} = I2;
-
-% set up for effh
-
-leftBlock = LBlock(mps, mpo, TARGET);
-rightBlock = RBlock(mps, mpo, TARGET);
-
-[rowMax, colMax, HILBY] = size( mps{TARGET} );
-
-if TARGET == L
-	mpodex = 3;
-elseif TARGET == 1
-	mpodex = 1;
-else
-	mpodex = 2;
-end
-
-mpo = mpo{mpodex};
-%}
+% 
+% [RETURN]
+% effectiveHamiltonian	: rank-6 tensor reshaped to be a matrix, contains the contraction of the whole tensor network except the update site tensor
+% 
+% [INPUTS]
+% HILBY			: int, dimension of the local state space
+% rowMax		: int, the number of rows in the update site tensor
+% colMax		: int, the number of columns in the update site tensor
+% leftBlock		: rank 3 tensor, contains the contraction through the whole network left of the update site
+% mpo			: cell array, 3 * 1, contains matrix product operator -- mpo{1} of first site, mpo{2} of bulk sites, mpo{3} of last site
+% rightBlock		: rank 3 tensor, contains the contraction through the whole network right of the update site  
 
 function [ effectiveHamiltonian ] = EffH(HILBY, rowMax, colMax, leftBlock, mpo, rightBlock);
 	% gather data	
