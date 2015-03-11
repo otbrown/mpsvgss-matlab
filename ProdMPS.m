@@ -9,6 +9,7 @@
 % [INPUT]
 % stateArray		: column vector containing states i.e. [1; 0; 0; 1; 0; ...]
 % HILBY			: dimension of Hilbert space on each site i.e. HILBY = 2 for a spin-half system
+% COMPRESS		: sets the maximum size of the matrices 
 
 function [matrices] = ProdMPS(stateArray, HILBY, COMPRESS)
 
