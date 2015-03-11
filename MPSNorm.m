@@ -2,7 +2,12 @@
 % Function which returns the (left-)normalised matrix product state.
 % Oliver Thomson Brown
 % 2015-03-04
-% DOCSTRING!
+% 
+% [RETURN]
+% normalMPS	: matrix product state which will have a norm of 1 -- ALL sites will be left-normalised
+%
+% [INPUTS]
+% mps		: any arbitrary matrix product state with a local Hilbert space dimension of 2 (this should be changed one day maybe)
 
 function [ normalMPS ] = MPSNorm( mps )
 	threshold = 1E-14;
