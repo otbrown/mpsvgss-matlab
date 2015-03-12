@@ -1,6 +1,14 @@
 % RBlock.m
 % Oliver Thomson Brown
 % 2015-02-10
+%
+% [RETURN]
+% rightBlock	: rank 3 tensor, contains contraction of tensor network from last site up to the site to the TARGET site
+%
+% [INPUTS]
+% mps		: cell array, matrix product state, mps{site} contains the rank 3 site tensor 
+% mpo		: cell array, matrix product operator, mpo{1} coontains the first-site mpo, mpo{2} contains the bulk site mpo, mpo{3} contains the last site mpo
+% TARGET	: int, location of the site up to which the right-block should be formed -- typically the next site to be updated
 
 function [ rightBlock ] = RBlock( mps, mpo, TARGET )
 	% pull data from inputs
