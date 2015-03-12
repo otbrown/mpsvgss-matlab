@@ -1,6 +1,6 @@
 % Rebuild.m
 % function which rebuilds the explicit (sparse) state vector from the MPS form -- HILBY = 2 ONLY
-% for debugging use only -- this will never be efficient! 
+% !IMPORTANT NOTE!: for debugging use only -- this will *never* be efficient! 
 % Oliver Thomson Brown
 % 16/10/2014
 %
