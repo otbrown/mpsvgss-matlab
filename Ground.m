@@ -35,8 +35,10 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 
 			if targetSite == 1
 				mpodex = 1;
+				groundMPS = Can(groundMPS, L : -1 : 2, 'R');
 			elseif targetSite == L
 				mpodex = 3;
+				groundMPS = Can(groundMPS, 1 : 1 : L - 1, 'L');
 			else
 				mpodex = 2;
 				groundMPS = Can(groundMPS, previousTarget, direction);
