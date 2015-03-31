@@ -1,4 +1,5 @@
 % EffH.m
+% function which generates the effective Hamiltonian on a given site, and maps it from a rank-6 tensor to a matrix
 % Oliver Thomson Brown
 % 2015-03-02
 % 
