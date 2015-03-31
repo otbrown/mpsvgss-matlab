@@ -35,10 +35,10 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 
 			if targetSite == 1
 				mpodex = 1;
-				groundMPS = Can(groundMPS, L : -1 : 2, 'R');
+				groundMPS = Can(groundMPS, 2, 'R');
 			elseif targetSite == L
 				mpodex = 3;
-				groundMPS = Can(groundMPS, 1 : 1 : L - 1, 'L');
+				groundMPS = Can(groundMPS, L - 1, 'L');
 			else
 				mpodex = 2;
 				groundMPS = Can(groundMPS, previousTarget, direction);
@@ -56,7 +56,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			updateCount = updateCount + 1;		% updateCount++
 			previousTarget = targetSite;
 
-			fprintf('Update %d: E = %d\n', updateCount, energyTracker(end));
+			fprintf('Update %u: E = %.5f\n', updateCount, real(energyTracker(end)));
 			
 			convFlag = ConvTest(energyTracker, L, THRESHOLD);
 
