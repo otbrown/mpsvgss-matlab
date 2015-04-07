@@ -26,7 +26,7 @@ function [ complexMPS ] = CompMPS( HILBY, L, COMPRESS )
 	if L == 3
 		colSize = 2;
 	else
-		colSize = 4;
+		colSize = min(4, COMPRESS);
 	end
 
 	for site = 2 : 1 : L - 1
