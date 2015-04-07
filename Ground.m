@@ -48,6 +48,9 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			rightBlock = RBlock(groundMPS, mpo, targetSite);
 
 			effectiveHamiltonian = EffH(HILBY, rowMax, colMax, leftBlock, mpo{mpodex}, rightBlock);
+			
+			[Hrow, Hcol] = size(effectiveHamiltonian);
+			fprintf('Effective Hamiltonian on site %u is %u x %u\n', targetSite, Hrow, Hcol);
 
 			[eigVec, energyTracker(end + 1)] = eigs(effectiveHamiltonian, 1, 'sr');
 
@@ -57,11 +60,15 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			previousTarget = targetSite;
 
 			fprintf('Update %u: E = %.5f\n', updateCount, real(energyTracker(end)));
-			
-			convFlag = ConvTest(energyTracker, L, THRESHOLD);
+			fprintf('Target Site: %u\n', targetSite);			
+			convFlag = ConvTest(energyTracker, 5, THRESHOLD);
 
+			% exit the loop if either the system is converged or the maximum number of updates has been reached
 			if convFlag
 				fprintf('Converged.\n');
+				break;
+			elseif updateCount >= RUNMAX
+				fprintf('Failed to converge.\n');
 				break;
 			end
 		end
