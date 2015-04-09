@@ -14,19 +14,12 @@
 %		  route should be 1 : 1 : L-1 where L is the length of the chain
 
 function [lmps] = LCan(mps, route)
-
-	threshold = 1E-14;
-	
 	% RETURN ALLOCATION
 	lmps = mps;
 	
 	for site = route		
 		M = cat(1, lmps{site}(:,:,1), lmps{site}(:,:,2) );
 		[U, S, V] = svd(M);
-
-		U(abs(U) < threshold) = 0;
-		S(abs(S) < threshold) = 0;
-		V(abs(V) < threshold) = 0;
 
 		Urow = size(U,1);
 		rowLim = size(M,1) / 2;
