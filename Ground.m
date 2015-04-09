@@ -50,7 +50,6 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			effectiveHamiltonian = EffH(HILBY, rowMax, colMax, leftBlock, mpo{mpodex}, rightBlock);
 			
 			[Hrow, Hcol] = size(effectiveHamiltonian);
-			fprintf('Effective Hamiltonian on site %u is %u x %u\n', targetSite, Hrow, Hcol);
 
 			[eigVec, energyTracker(end + 1)] = eigs(effectiveHamiltonian, 1, 'sr');
 
