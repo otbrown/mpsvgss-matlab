@@ -17,10 +17,6 @@
 % SPACE		: the dimension of the total system hilbert space
 
 function [matrices] = LMPS(init, HILBY, COMPRESS, L, SPACE)	
-	
-	threshold = 1E-14;				% mid-calculation values below this threshold will be zeroed -- improves stability
-
-	% RETURN ALLOCATION
 	matrices = cell(L,1);
 
 	% FIRST SITE
@@ -48,10 +44,6 @@ function [matrices] = LMPS(init, HILBY, COMPRESS, L, SPACE)
 		colLim = max(min(sprank( state ), COMPRESS), 2);
 
 		[U, S, V] = Decomp(state, COMPRESS);
-
-		U(abs(U) < threshold) = 0;
-		S(abs(S) < threshold) = 0;
-		V(abs(V) < threshold) = 0;
 
 		Urow = size(U,1);
 
