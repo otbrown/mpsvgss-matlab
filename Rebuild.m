@@ -13,12 +13,10 @@
 % init		: d^L double array, contains the initial state vector which was decomposed
 
 function [state, varargout] = Rebuild(matrices, varargin)
-
 	% INPUT/RETURN CHECKS & TIDY-UP 
 	nargoutchk(0,2);	
 	narginchk(1,2);			% checks number of arguments for input and output
 
-	threshold = 1E-14;
 	L = size(matrices, 1);
 	SPACE = 2^L;
 	
@@ -58,12 +56,8 @@ function [state, varargout] = Rebuild(matrices, varargin)
 	    state = state + coefft*comp(:, sigma);
 	end
 
-	state(abs(state) < threshold) = 0;
-
 	if nargout == 2
 		epsilon = abs(state - init);
-		epsilon(epsilon < threshold) = 0;
 		varargout{1} = epsilon;		% varargout{1} is the difference between the rebuilt and original states 
 	end
-
 end
