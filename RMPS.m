@@ -18,9 +18,6 @@
 
 
 function [matrices] = RMPS(init, HILBY, COMPRESS, L, SPACE)
-
-	threshold = 1E-14;
-	
 	% RETURN ALLOCATION
 	matrices = cell(L,1);
 
@@ -44,17 +41,13 @@ function [matrices] = RMPS(init, HILBY, COMPRESS, L, SPACE)
 	for site = route
 		[chainRow, chainCol] = size(chain);
 
-		state = zeros(chainRow / 2, 2*chainCol);
+		state = zeros(chainRow / 2, 2 * chainCol);
 		state( :, 1 : chainCol) = chain( 1 : 2 : end, :);
-		state( :, chainCol + 1 : 2*chainCol) = chain( 2 : 2 : end, :);  		
+		state( :, chainCol + 1 : 2 * chainCol) = chain( 2 : 2 : end, :);  		
 
 		rowLim = max(min(sprank( state ), COMPRESS), 2);
 
 		[U, S, V] = Decomp(state, COMPRESS);
-
-		U(abs(U) < threshold) = 0;
-		S(abs(S) < threshold) = 0;
-		V(abs(V) < threshold) = 0;
 
 		V = ctranspose(V);
 		Vcol = size(V,2);
