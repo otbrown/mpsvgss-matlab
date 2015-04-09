@@ -10,18 +10,12 @@
 % mps		: any arbitrary matrix product state with a local Hilbert space dimension of 2 (this should be changed one day maybe)
 
 function [ normalMPS ] = MPSNorm( mps )
-	threshold = 1E-14;
-
 	L = size( mps, 1 );			% TASHA YAR
 	normalMPS = mps;
 
 	for site = 1 : 1 : L - 1
 		M = cat(1, normalMPS{site}(:, :, 1), normalMPS{site}(:, :, 2));
 		[U, S, V] = svd(M);
-
-		U(abs(U) < threshold) = 0;	% on the regz
-		S(abs(S) < threshold) = 0;
-		V(abs(V) < threshold) = 0;
 
 		Urow = size(U, 1);
 		rowLim = size(M, 1) / 2;
@@ -41,8 +35,6 @@ function [ normalMPS ] = MPSNorm( mps )
 
 	M = cat(1, normalMPS{L}(:, :, 1), normalMPS{L}(:, :, 2));
 	[U, S, V] = svd(M);
-
-	U(abs(U) < threshold) = 0;
 
 	Urow = size(U, 1);
 	rowLim = size(M, 1) / 2;
