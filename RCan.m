@@ -14,19 +14,12 @@
 %		  route should be L : -1 : 2 where L is the length of the chain
 
 function [rmps] = RCan(mps, route)
-
-	threshold = 1E-14;
-	
 	% RETURN ALLOCATION
 	rmps = mps;
 	
 	for site = route		
 		M = cat(2, rmps{site}(:,:,1), rmps{site}(:,:,2) );
 		[U, S, V] = svd(M);
-
-		U(abs(U) < threshold) = 0;
-		S(abs(S) < threshold) = 0;
-		V(abs(V) < threshold) = 0;
 
 		V = ctranspose(V);
 
