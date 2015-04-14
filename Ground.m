@@ -25,9 +25,24 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 	groundMPS = init_mps;
 	groundMPS = Can(groundMPS, L : -1 : 2, 'R');
 
+	% build left and right contractions
+	left = cell(L, 1);
+	right = cell(L, 1);
+	left{1} = 1;
+	right{L} = 1;
+	
+	fprintf('Building left and right contraction blocks.\n');
+	for targetSite = 2 : 1 : L
+		left{targetSite} = GrowBlock(groundMPS, mpo, targetSite - 1, 'L', left);
+	end
+	for targetSite = L - 1 : -1 : 1
+		right{targetSite} = GrowBlock(groundMPS, mpo, targetSite + 1, 'R', right);
+	end
+	fprintf('Built.\n');
+
 	% calculate initial state energy
-	rightBlock = RBlock(groundMPS, mpo, 1);
-	energyTracker = Expect(groundMPS, mpo, 1, rightBlock, 1);
+	%rightBlock = RBlock(groundMPS, mpo, 1);
+	energyTracker = Expect(groundMPS, mpo, 1, right{1}, 1);
 
 	while updateCount < RUNMAX && ~convFlag
 		for targetSite = route
@@ -36,16 +51,25 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			if targetSite == 1
 				mpodex = 1;
 				groundMPS = Can(groundMPS, 2, 'R');
+				right{1} = GrowBlock(groundMPS, mpo, 2, 'R', right);
 			elseif targetSite == L
 				mpodex = 3;
 				groundMPS = Can(groundMPS, L - 1, 'L');
+				left{L} = GrowBlock(groundMPS, mpo, L - 1, 'L', left);
 			else
 				mpodex = 2;
 				groundMPS = Can(groundMPS, previousTarget, direction);
+				if direction == 'L'
+					left{targetSite} = GrowBlock(groundMPS, mpo, previousTarget, direction, left);
+				elseif direction == 'R'
+					right{targetSite} = GrowBlock(groundMPS, mpo, previousTarget, direction, right);
+				end
 			end
 
-			leftBlock = LBlock(groundMPS, mpo, targetSite);
-			rightBlock = RBlock(groundMPS, mpo, targetSite);
+			%leftBlock = LBlock(groundMPS, mpo, targetSite);
+			%rightBlock = RBlock(groundMPS, mpo, targetSite);
+			leftBlock = left{targetSite};
+			rightBlock = right{targetSite};
 
 			effectiveHamiltonian = EffH(HILBY, rowMax, colMax, leftBlock, mpo{mpodex}, rightBlock);
 			
