@@ -38,13 +38,19 @@ function [ updateBlock ] = GrowBlock(mps, mpo, TARGET, SIDE, blockCell)
 
 	% select block
 	block = blockCell{TARGET};
-	blockSize = size(block);
+	noBlock = 0;
 
 	% make Grow call
 	if SIDE == 'L'
-		updateBlock = GrowLeft(siteTensor, mpoTensor, block, blockSize, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT);
+		if TARGET == 1
+			noBlock = 1;
+		end
+		updateBlock = GrowLeft(siteTensor, mpoTensor, block, noBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT);
 	elseif SIDE == 'R'
-		updateBlock = GrowRight(siteTensor, mpoTensor, block, blockSize, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT);
+		if TARGET == L
+			noBlock = 1;
+		end
+		updateBlock = GrowRight(siteTensor, mpoTensor, block, noBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT);
 	else
 		updateBlock = 0;
 		fprintf('Please enter a valid SIDE of the network (L or R).\n')
