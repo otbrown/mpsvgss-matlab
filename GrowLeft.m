@@ -10,15 +10,15 @@
 % siteTensor	: 3-D double array, the MPS tensor on the site which is to be included in the left block
 % mpoTensor	: 2-D double array, the MPO tensor for the site which is to be included in the left block
 % leftBlock	: 3-D double array, the block which is to be 'grown' by including the contraction through the target site
+% blockSize	: 1-D double array, the dimensions of the left contraction up to the site which is to be included
+% rowMax	: integer, the number of rows in the mps tensor on the site which is to be included in the left block
+% colMax	: integer, the number of columns in the mps tensor on the site which is to be included in the right block
+% HILBY		: integer, the size of the local state space
+% opRowMax	: integer, the number of rows in the block notation form of the matrix product operator counting from 0
+% opColMax	: integer, the number of columns in the block notation form of the matrix product opereator counting from 0
+% OPCOUNT	: integer, the larger of opRowMax and opColMax plus one
 
-function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock)
-	% gather constants
-	[ rowMax, colMax, HILBY ] = size( siteTensor );
-	opRowMax = ( size(mpoTensor, 1) / HILBY ) - 1;
-	opColMax = ( size(mpoTensor, 2) / HILBY ) - 1;
-	OPCOUNT = max(opRowMax, opColMax) + 1;
-	leftBlockSize = size( leftBlock );
-
+function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock, blockSize, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
 	% pre-allocate return array
 	updateBlock = zeros(colMax, colMax, OPCOUNT);
 	
@@ -34,7 +34,7 @@ function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock)
 							for opRow = 0 : 1 : opRowMax
 								FA = 0;
 								for row = 1 : 1 : rowMax
-									if leftBlockSize == 1
+									if blockSize == 1
 										FA = FA + siteTensor(row, col, ketState);
 									else
 										FA = FA + leftBlock(conjCol, row, opRow + 1) * siteTensor(row, col, ketState);
@@ -51,4 +51,3 @@ function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock)
 		end % opCol
 	end % conjRow
 end
-		 
