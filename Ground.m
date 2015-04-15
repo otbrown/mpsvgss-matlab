@@ -28,8 +28,8 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 	% build left and right contractions
 	left = cell(L, 1);
 	right = cell(L, 1);
-	left{1} = 1;
-	right{L} = 1;
+	left{1} = ones(1,1,1);
+	right{L} = ones(1,1,1);
 	
 	fprintf('Building contraction from right-hand side.\n');
 	for targetSite = L - 1 : -1 : 1
@@ -38,7 +38,6 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 	fprintf('Built.\n');
 
 	% calculate initial state energy
-	%rightBlock = RBlock(groundMPS, mpo, 1);
 	energyTracker = Expect(groundMPS, mpo, 1, right{1}, 1);
 
 	while updateCount < RUNMAX && ~convFlag
@@ -68,8 +67,6 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 
 			effectiveHamiltonian = EffH(HILBY, rowMax, colMax, leftBlock, mpo{mpodex}, rightBlock);
 			
-			[Hrow, Hcol] = size(effectiveHamiltonian);
-
 			[eigVec, energyTracker(end + 1)] = eigs(effectiveHamiltonian, 1, 'sr');
 
 			groundMPS{targetSite} = SiteUpdate(eigVec, rowMax, colMax, HILBY);
