@@ -31,10 +31,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 	left{1} = 1;
 	right{L} = 1;
 	
-	fprintf('Building left and right contraction blocks.\n');
-	for targetSite = 2 : 1 : L
-		left{targetSite} = GrowBlock(groundMPS, mpo, targetSite - 1, 'L', left);
-	end
+	fprintf('Building contraction from right-hand side.\n');
 	for targetSite = L - 1 : -1 : 1
 		right{targetSite} = GrowBlock(groundMPS, mpo, targetSite + 1, 'R', right);
 	end
@@ -66,8 +63,6 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 				end
 			end
 
-			%leftBlock = LBlock(groundMPS, mpo, targetSite);
-			%rightBlock = RBlock(groundMPS, mpo, targetSite);
 			leftBlock = left{targetSite};
 			rightBlock = right{targetSite};
 
