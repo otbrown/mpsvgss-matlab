@@ -14,7 +14,7 @@
 % mpo			: cell array, 3 * 1, contains matrix product operator -- mpo{1} of first site, mpo{2} of bulk sites, mpo{3} of last site
 % rightBlock		: rank 3 tensor, contains the contraction through the whole network right of the update site  
 
-function [ effectiveHamiltonian ] = EffH(HILBY, rowMax, colMax, leftBlock, mpo, rightBlock);
+function [ effectiveHamiltonian ] = EffH(HILBY, rowMax, colMax, leftBlock, mpo, rightBlock)
 	% gather data	
 	opRowMax = ( size(mpo, 1) / HILBY ) - 1;
 	opColMax = ( size(mpo, 2) / HILBY ) - 1;
