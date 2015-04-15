@@ -10,7 +10,6 @@
 % siteTensor	: 3-D double array, the mps tensor on the TARGET site
 % mpoTensor	: 2-D double array, the matrix product operator for the TARGET site
 % rightBlock	: 3-D double array, the contraction from the last site through the tensor network up to but *not* including the TARGET site
-% noBlock	: integer, boolean flag which indicates if the rightBlock is just the number 1
 % rowMax	: integer, the number of rows in siteTensor
 % colMax	: integer, the number of columns in siteTensor
 % HILBY		: integer, the dimension of the local state space
@@ -18,7 +17,7 @@
 % opColMax	: integer, the number of columns in the block representation of the matrix product operator, counting from 0
 % OPCOUNT	: integer, the larger of opRowMax and opColMax plus one
 
-function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, noBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
+function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
 	% pre-allocate return array
 	updateBlock = zeros(rowMax, rowMax, OPCOUNT);
 
@@ -32,15 +31,6 @@ function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, noBlock,
 						WFB = 0;
 						for ketState = 1 : 1 : HILBY
 							for opCol = 0 : 1 : opColMax
-								%FB = 0;
-								%for col = 1 : 1 : colMax
-								%	if noBlock
-								%		FB = siteTensor(row, :, ketState);
-								%	else
-								%		FB = FB + rightBlock(conjRow, col, opCol + 1) * siteTensor(row, col, ketState);
-								%	end
-								%end % col
-								%
 								FB = rightBlock(conjRow, :, opCol + 1) * transpose( siteTensor(row, :, ketState) );	
 								WFB = WFB + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
 							end % opCol
