@@ -10,7 +10,6 @@
 % siteTensor	: 3-D double array, the MPS tensor on the site which is to be included in the left block
 % mpoTensor	: 2-D double array, the MPO tensor for the site which is to be included in the left block
 % leftBlock	: 3-D double array, the block which is to be 'grown' by including the contraction through the target site
-% noBlock	: integer, boolean flag -- if noBlock then the site to be included is the first and the contraction up to it is just 1
 % rowMax	: integer, the number of rows in the mps tensor on the site which is to be included in the left block
 % colMax	: integer, the number of columns in the mps tensor on the site which is to be included in the right block
 % HILBY		: integer, the size of the local state space
@@ -18,7 +17,7 @@
 % opColMax	: integer, the number of columns in the block notation form of the matrix product opereator counting from 0
 % OPCOUNT	: integer, the larger of opRowMax and opColMax plus one
 
-function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock, noBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
+function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
 	% pre-allocate return array
 	updateBlock = zeros(colMax, colMax, OPCOUNT);
 	
@@ -32,14 +31,7 @@ function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock, noBlock, r
 						WFA = 0;
 						for ketState = 1 : 1 : HILBY
 							for opRow = 0 : 1 : opRowMax
-								FA = 0;
-								for row = 1 : 1 : rowMax
-									if noBlock
-										FA = FA + siteTensor(row, col, ketState);
-									else
-										FA = FA + leftBlock(conjCol, row, opRow + 1) * siteTensor(row, col, ketState);
-									end
-								end % row
+								FA = leftBlock(conjCol, :, opRow + 1) * siteTensor(:, col, ketState);
 								WFA = WFA + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FA;
 							end % opRow
 						end % ketState
