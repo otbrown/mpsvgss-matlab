@@ -32,14 +32,16 @@ function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, noBlock,
 						WFB = 0;
 						for ketState = 1 : 1 : HILBY
 							for opCol = 0 : 1 : opColMax
-								FB = 0;
-								for col = 1 : 1 : colMax
-									if noBlock
-										FB = FB + siteTensor(row, col, ketState);
-									else
-										FB = FB + rightBlock(conjRow, col, opCol + 1) * siteTensor(row, col, ketState);
-									end
-								end % col
+								%FB = 0;
+								%for col = 1 : 1 : colMax
+								%	if noBlock
+								%		FB = siteTensor(row, :, ketState);
+								%	else
+								%		FB = FB + rightBlock(conjRow, col, opCol + 1) * siteTensor(row, col, ketState);
+								%	end
+								%end % col
+								%
+								FB = rightBlock(conjRow, :, opCol + 1) * transpose( siteTensor(row, :, ketState) );	
 								WFB = WFB + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
 							end % opCol
 						end % ketState 
