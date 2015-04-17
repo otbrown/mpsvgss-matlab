@@ -20,26 +20,29 @@
 function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
 	% pre-allocate return array
 	updateBlock = zeros(rowMax, rowMax, OPCOUNT);
+	
+	% transpose siteTensor to improve inner-loop efficiency
+	for localState = 1 : 1 : HILBY
+		tSiteTensor(:,:,localState) = transpose(siteTensor(:,:,localState));
+	end
 
 	% perform contraction
-	for conjCol = 1 : 1 : rowMax
-		for opRow = 0 : 1 : opRowMax
-			for row = 1 : 1 : rowMax
-				BWFB = 0;
-				for braState = 1 : 1 : HILBY
-					for conjRow = 1 : 1 : colMax
-						WFB = 0;
-						for ketState = 1 : 1 : HILBY
-							for opCol = 0 : 1 : opColMax
-								FB = rightBlock(conjRow, :, opCol + 1) * transpose( siteTensor(row, :, ketState) );	
-								WFB = WFB + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
-							end % opCol
-						end % ketState 
-						BWFB = BWFB + conj(siteTensor(conjCol, conjRow, braState)) * WFB;
-					end % conjRow
-				end % braState
-				updateBlock(conjCol, row, opRow + 1) = updateBlock(conjCol, row, opRow + 1) + BWFB;
-			end % row
-		end % opRow
-	end % conjCol
+	for opRow = 0 : 1 : opRowMax
+		for row = 1 : 1 : rowMax
+			BWFB = 0;
+			for braState = 1 : 1 : HILBY
+				for conjRow = 1 : 1 : colMax
+					WFB = 0;
+					for ketState = 1 : 1 : HILBY
+						for opCol = 0 : 1 : opColMax
+							FB = rightBlock(conjRow, :, opCol + 1) * tSiteTensor(:, row, ketState);
+							WFB = WFB + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
+						end % opCol
+					end % ketState 
+					BWFB = BWFB + conj(tSiteTensor(conjRow, 1 : rowMax, braState)) * WFB;
+				end % conjRow
+			end % braState
+			updateBlock(1 : rowMax, row, opRow + 1) = updateBlock(1 : rowMax, row, opRow + 1) + transpose(BWFB);
+		end % row
+	end % opRow
 end
