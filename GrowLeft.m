@@ -20,26 +20,24 @@
 function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
 	% pre-allocate return array
 	updateBlock = zeros(colMax, colMax, OPCOUNT);
-	
-	% perform nested sum
-	for conjRow = 1 : 1 : colMax
-		for opCol = 0 : 1 : opColMax
-			for col = 1 : 1 : colMax
-				AWFA = 0;
-				for braState = 1 : 1 : HILBY
-					for conjCol = 1 : 1 : rowMax
-						WFA = 0;
-						for ketState = 1 : 1 : HILBY
-							for opRow = 0 : 1 : opRowMax
-								FA = leftBlock(conjCol, :, opRow + 1) * siteTensor(:, col, ketState);
-								WFA = WFA + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FA;
-							end % opRow
-						end % ketState
-						AWFA = AWFA + conj( siteTensor(conjCol, conjRow, braState) ) * WFA;
-					end % conjCol
-				end % braState
-				updateBlock(conjRow, col, opCol + 1) = updateBlock(conjRow, col, opCol + 1) + AWFA;
-			end % col
-		end % opCol
-	end % conjRow
+	       
+	% perform contraction
+	for opCol = 0 : 1 : opColMax
+		for col = 1 : 1 : colMax
+			AWFA = 0;
+			for braState = 1 : 1 : HILBY
+				for conjCol = 1 : 1 : rowMax
+					WFA = 0;
+					for ketState = 1 : 1 : HILBY
+						for opRow = 0 : 1 : opRowMax
+							FA = leftBlock(conjCol, :, opRow + 1) * siteTensor(:, col, ketState);
+							WFA = WFA + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FA;
+						end % opRow
+					end % ketState
+					AWFA = AWFA + conj( siteTensor(conjCol, 1 : colMax, braState) ) * WFA;
+				end % conjCol
+			end % braState
+			updateBlock(1 : colMax, col, opCol + 1) = updateBlock(1 : colMax, col, opCol + 1) + transpose(AWFA);
+		end % col
+	end % opCol
 end
