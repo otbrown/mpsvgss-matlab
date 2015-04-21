@@ -14,31 +14,34 @@ function [ normalMPS ] = MPSNorm( mps )
 	normalMPS = mps;
 
 	for site = 1 : 1 : L - 1
-		M = cat(1, normalMPS{site}(:, :, 1), normalMPS{site}(:, :, 2));
+        [rowMax, colMax, HILBY] = size(normalMPS{site});
+		
+		perm = permute(normalMPS{site}, [1, 3, 2]);
+		M = reshape(perm, [HILBY * rowMax, colMax]);
 		[U, S, V] = svd(M);
 
-		Urow = size(U, 1);
-		rowLim = size(M, 1) / 2;
-		colLim = size(M, 2);
+		U = U(1 : (HILBY * rowMax), 1 : colMax);
+		reshU = reshape(U, [rowMax, HILBY, colMax]);
+		normalMPS{site} = permute(reshU, [1, 3, 2]);
 
-		normalMPS{site}(:, :, :) = cat(3, U(1 : rowLim, 1 : colLim), U(Urow/2 + 1 : Urow/2 + rowLim, 1 : colLim));
+		chain = S * ctranspose(V);
 
-		chain = S * ctranspose(V);	% listen to the wind blow
-
-		rowLim = colLim;
-		colLim = size(normalMPS{site + 1}(:, :, 1), 2);
-
-		N = cat(3, chain * normalMPS{site + 1}(:, :, 1), chain * normalMPS{site + 1}(:, :, 2));
-
-		normalMPS{site + 1} = cat(3, N(1 : rowLim, 1 : colLim, 1), N(1 : rowLim, 1 : colLim, 2));
+		rowMax = colMax;
+		colMax = size(normalMPS{site + 1}(:,:,1), 2);
+		
+		for localState = 1 : 1 : HILBY
+			N = chain * normalMPS{site+1}(:, :, localState);
+			normalMPS{site + 1}(:, :, localState) = N(1 : rowMax, 1 : colMax);
+		end 
 	end
 
-	M = cat(1, normalMPS{L}(:, :, 1), normalMPS{L}(:, :, 2));
-	[U, S, V] = svd(M);
+        [rowMax, colMax, HILBY] = size(normalMPS{L});
+		
+		perm = permute(normalMPS{L}, [1, 3, 2]);
+		M = reshape(perm, [HILBY * rowMax, colMax]);
+		[U, S, V] = svd(M);
 
-	Urow = size(U, 1);
-	rowLim = size(M, 1) / 2;
-	colLim = size(M, 2);
-
-	normalMPS{L}(:, :, :) = cat(3, U(1 : rowLim, 1 : colLim), U(Urow/2 + 1 : Urow/2 + rowLim, 1 : colLim));		
+		U = U(1 : (HILBY * rowMax), 1 : colMax);
+		reshU = reshape(U, [rowMax, HILBY, colMax]);
+		normalMPS{L} = permute(reshU, [1, 3, 2]);
 end 
