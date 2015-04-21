@@ -18,25 +18,24 @@ function [lmps] = LCan(mps, route)
 	lmps = mps;
 	
 	for site = route		
-		M = cat(1, lmps{site}(:,:,1), lmps{site}(:,:,2) );
+		[rowMax, colMax, HILBY] = size(lmps{site});
+		
+		perm = permute(lmps{site}, [1, 3, 2]);
+		M = reshape(perm, [HILBY * rowMax, colMax]);
 		[U, S, V] = svd(M);
 
-		Urow = size(U,1);
-		rowLim = size(M,1) / 2;
-		colLim = size(M,2);
-
-		lmps{site}(:, :, :) = cat(3, U(1:rowLim, 1:colLim), U(Urow/2 + 1 : Urow/2 + rowLim, 1:colLim));
+		U = U(1 : (HILBY * rowMax), 1 : colMax);
+		reshU = reshape(U, [rowMax, HILBY, colMax]);
+		lmps{site} = permute(reshU, [1, 3, 2]);
 
 		chain = S * ctranspose(V);
 
-		rowLim = colLim;
-		colLim = size(lmps{site+1}(:,:,1), 2);
-
-		N = cat(3, chain * lmps{site+1}(:,:,1), chain * lmps{site+1}(:,:,2));
+		rowMax = colMax;
+		colMax = size(lmps{site + 1}(:,:,1), 2);
 		
-		lmps{site+1} = cat(3, N(1:rowLim,1:colLim,1), N(1:rowLim,1:colLim,2));
-
-		%fprintf('site %d left-normalised\n', site);
+		for localState = 1 : 1 : HILBY
+			N = chain * lmps{site+1}(:, :, localState);
+			lmps{site + 1}(:, :, localState) = N(1 : rowMax, 1 : colMax);
+		end 
 	end
-
 end
