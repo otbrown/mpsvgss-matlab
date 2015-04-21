@@ -19,27 +19,26 @@ function [ effectiveHamiltonian ] = EffH(HILBY, rowMax, colMax, leftBlock, mpoTe
 	dimension = HILBY * rowMax * colMax;
 	effectiveHamiltonian = zeros(dimension, dimension);
     
-    % permute left and right blocks
-    leftBlock = permute(leftBlock, [1,3,2]);
-    rightBlock = permute(rightBlock, [3,1,2]);
+	% permute left and right blocks
+	leftBlock = permute(leftBlock, [1,3,2]);
+	rightBlock = permute(rightBlock, [3,1,2]);
 
 	% LOOP THE LOOP
-    for braState = 0 : 1 : HILBY - 1
-        for ketState = 0 : 1 : HILBY - 1
-            stateMPO = mpoTensor(braState + 1 : HILBY : end, ketState + 1 : HILBY : end);
-            for row = 0 : 1 : rowMax - 1
-                for col = 1 : 1 : colMax
-                    for conjCol = 0 : 1 : rowMax - 1
-                        jRow = braState * colMax * rowMax + conjCol * colMax;
-                        jCol = ketState * rowMax * colMax + row * colMax + col;
-                        % introduce blocks and contract LWR
-                        effectiveHamiltonian(jRow + 1 : jRow + colMax, jCol) = effectiveHamiltonian(jRow + 1 : jRow + colMax, jCol) + ...
-                            transpose(leftBlock(conjCol + 1, :, row + 1) * stateMPO * rightBlock(:, :, col));
-                        % END TIMES
-                    end
-                end
-            end
-        end
-    end
-	 
+	for braState = 0 : 1 : HILBY - 1
+		for ketState = 0 : 1 : HILBY - 1
+			stateMPO = mpoTensor(braState + 1 : HILBY : end, ketState + 1 : HILBY : end);
+			for row = 0 : 1 : rowMax - 1
+				for col = 1 : 1 : colMax
+					for conjCol = 0 : 1 : rowMax - 1
+						jRow = braState * colMax * rowMax + conjCol * colMax;
+						jCol = ketState * rowMax * colMax + row * colMax + col;
+						% introduce blocks and contract LWR
+						effectiveHamiltonian(jRow + 1 : jRow + colMax, jCol) = effectiveHamiltonian(jRow + 1 : jRow + colMax, jCol) + ...
+				    		transpose(leftBlock(conjCol + 1, :, row + 1) * stateMPO * rightBlock(:, :, col));
+						% END TIMES
+					end
+				end
+			end
+		end
+	end	 
 end
