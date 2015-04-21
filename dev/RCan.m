@@ -16,29 +16,26 @@
 function [rmps] = RCan(mps, route)
 	% RETURN ALLOCATION
 	rmps = mps;
+    
+    [rowMax, colMax, HILBY] = size(rmps{route(1)});
 	
-	for site = route		
-		M = cat(2, rmps{site}(:,:,1), rmps{site}(:,:,2) );
+    for site = route		
+        M = reshape(rmps{site}, [rowMax, colMax * HILBY]);
 		[U, S, V] = svd(M);
 
 		V = ctranspose(V);
+        V = V(1 : rowMax, 1 : (colMax * HILBY));
 
-		Vcol = size(V,2);
-		rowLim = size(M,1);
-		colLim = size(M,2) / 2;
-
-		rmps{site}(:, :, :) = cat(3, V(1:rowLim, 1:colLim), V(1:rowLim, Vcol/2 + 1 : Vcol/2 + colLim));
+        rmps{site} = reshape(V, [rowMax, colMax, HILBY]);
 
 		chain = U * S;
 
-		colLim = rowLim;
-		rowLim = size(rmps{site-1}(:,:,1), 1);
+        colMax = rowMax;
+        rowMax = size(rmps{site - 1}(:,:,1), 1); 
 
-		N = cat(3, rmps{site-1}(:,:,1) * chain, rmps{site-1}(:,:,2) * chain);
-		
-		rmps{site-1} = cat(3, N(1:rowLim,1:colLim,1), N(1:rowLim,1:colLim,2));
-
-		%fprintf('site %d right-normalised\n', site);
-	end
-
+        for localState = 1 : 1 : HILBY
+            N = rmps{site - 1}(:, :, localState) * chain;
+            rmps{site - 1}(:, :, localState) = N(1 : rowMax, 1 : colMax);
+        end
+    end
 end
