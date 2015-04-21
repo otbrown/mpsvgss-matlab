@@ -17,9 +17,9 @@ function [lmps] = LCan(mps, route)
 	% RETURN ALLOCATION
 	lmps = mps;
 	
+    [rowMax, colMax, HILBY] = size(lmps{route(1)});
+    
 	for site = route		
-		[rowMax, colMax, HILBY] = size(lmps{site});
-		
 		perm = permute(lmps{site}, [1, 3, 2]);
 		M = reshape(perm, [HILBY * rowMax, colMax]);
 		[U, S, V] = svd(M);
