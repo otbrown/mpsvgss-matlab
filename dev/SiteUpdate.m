@@ -13,14 +13,6 @@
 % HILBY		: double (integer), the size of the local Hilbert space
 
 function [ updateMatrix ] = SiteUpdate(eigVec, rowMax, colMax, HILBY)
-	updateMatrix = zeros(rowMax, colMax, HILBY);
-
-	for ketState = 0 : 1 : HILBY - 1
-		for row = 0 : 1 : rowMax - 1
-			for col = 1 : 1 : colMax
-				vecdex = ketState * rowMax * colMax + row * colMax + col;
-				updateMatrix(row + 1, col, ketState + 1) = eigVec(vecdex);
-			end
-		end
-	end
+	vecReshaped = reshape(eigVec, [colMax, rowMax, HILBY]);
+	updateMatrix = permute(vecReshaped, [2, 1, 3]);
 end
