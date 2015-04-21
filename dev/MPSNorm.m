@@ -12,10 +12,10 @@
 function [ normalMPS ] = MPSNorm( mps )
 	L = size( mps, 1 );			% TASHA YAR
 	normalMPS = mps;
+    
+    [rowMax, colMax, HILBY] = size(normalMPS{1});
 
-	for site = 1 : 1 : L - 1
-        [rowMax, colMax, HILBY] = size(normalMPS{site});
-		
+	for site = 1 : 1 : L - 1	
 		perm = permute(normalMPS{site}, [1, 3, 2]);
 		M = reshape(perm, [HILBY * rowMax, colMax]);
 		[U, S, V] = svd(M);
