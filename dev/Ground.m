@@ -76,7 +76,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 
 			fprintf('Target Site: %u\n', targetSite);
 			fprintf('Update %u: E = %.5f\n', updateCount, real(energyTracker(end)));
-			convFlag = ConvTest(energyTracker, 5, THRESHOLD);
+			convFlag = ConvTest(energyTracker, L, THRESHOLD);
 
 			% exit the loop if either the system is converged or the maximum number of updates has been reached
 			if convFlag
