@@ -20,50 +20,36 @@ function [ expectationValue ] = Expect(mps, mpo, leftBlock, rightBlock, TARGET)
 	L = size(mps, 1);
 
 	M = mps{TARGET};
-	[rowMax, colMax, HILBY] = size(M);	
+    conjM = conj(permute(M, [2, 1, 3]));
+	[rowMax, colMax, HILBY] = size(M);
+    
+    if TARGET == 1			% select correct mpo
+        mpodex = 1;
+    elseif TARGET == L
+        mpodex = 3;
+    else
+        mpodex = 2;
+    end
 
-	conjM = zeros(colMax, rowMax, HILBY);
-	for localState = 1 : 1 : HILBY
-		conjM(:, :, localState) = ctranspose( M(:, :, localState) );
-	end
-
-	opCount = length(mpo{1}) / HILBY ;
-	
-	if TARGET == 1			% select correct mpo
-		mpodex = 1;
-		opRowMax = 0;
-		opColMax = opCount - 1;
-	elseif TARGET == L
-		mpodex = 3;
-		opRowMax = opCount - 1;
-		opColMax = 0;
-	else
-		mpodex = 2;
-		opRowMax = opCount - 1;
-		opColMax = opCount - 1;
-	end
-
+    mpoTensor = mpo{mpodex};
+    
+    % permutations
+    lBlock = permute(leftBlock, [1, 3, 2]);
+    rBlock = permute(rightBlock, [3, 1, 2]);
+    
 	% CALCULATION BEGINS
 	expectationValue = 0;
 	
-	for braState = 1 : 1 : HILBY
-		for ketState = 1 : 1 : HILBY
-			for row = 1 : 1 : rowMax
-				for col = 1 : 1 : colMax
-					for conjRow = 1 : 1 : colMax
-						for conjCol = 1 : 1 : rowMax
-							for opRow = 0 : 1 : opRowMax
-								for opCol = 0 : 1 : opColMax
-									expectationValue = expectationValue + leftBlock( conjCol, row, opRow + 1) ...
-										* mpo{mpodex}( opRow * HILBY + braState, opCol * HILBY + ketState) ...
-										* rightBlock( conjRow, col, opCol + 1) * conjM( conjRow, conjCol, braState) ...
-										* M( row, col, ketState); 
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-	end	
+    for braState = 1 : 1 : HILBY
+        for ketState = 1 : 1 : HILBY
+            stateMPO = mpoTensor(braState : HILBY : end, ketState : HILBY : end);
+            for row = 1 : 1 : rowMax
+                for col = 1 : 1 : colMax
+                    expectationValue = expectationValue + sum( diag( ...
+                        lBlock( :, :, row) * stateMPO * rBlock( :, :, col) ... 
+                        * conjM( :, :, braState) )) * M( row, col, ketState);
+                end
+            end
+        end
+    end
 end
