@@ -22,9 +22,7 @@ function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, rowMax, 
 	updateBlock = zeros(rowMax, rowMax, OPCOUNT);
 	
 	% transpose siteTensor to improve inner-loop efficiency
-	for localState = 1 : 1 : HILBY
-		tSiteTensor(:,:,localState) = transpose(siteTensor(:,:,localState));
-	end
+    tSiteTensor = permute(siteTensor, [2, 1, 3]);
 
 	% perform contraction
 	for opRow = 0 : 1 : opRowMax
