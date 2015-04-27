@@ -22,7 +22,7 @@ function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, rowMax, 
 	updateBlock = zeros(rowMax, rowMax, OPCOUNT);
 	
 	% transpose siteTensor to improve inner-loop efficiency
-    tSiteTensor = permute(siteTensor, [2, 1, 3]);
+    	tSiteTensor = permute(siteTensor, [2, 1, 3]);
 
 	% perform contraction
 	for opRow = 0 : 1 : opRowMax
@@ -33,8 +33,7 @@ function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, rowMax, 
 					WFB = 0;
 					for ketState = 1 : 1 : HILBY
 						for opCol = 0 : 1 : opColMax
-							FB = rightBlock(conjRow, :, opCol + 1) * tSiteTensor(:, row, ketState);
-							WFB = WFB + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FB;
+							WFB = WFB + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * rightBlock(conjRow, :, opCol + 1) * tSiteTensor(:, row, ketState);
 						end % opCol
 					end % ketState 
 					BWFB = BWFB + conj(tSiteTensor(conjRow, 1 : rowMax, braState)) * WFB;
