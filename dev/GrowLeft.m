@@ -30,8 +30,7 @@ function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock, rowMax, co
 					WFA = 0;
 					for ketState = 1 : 1 : HILBY
 						for opRow = 0 : 1 : opRowMax
-							FA = leftBlock(conjCol, :, opRow + 1) * siteTensor(:, col, ketState);
-							WFA = WFA + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * FA;
+							WFA = WFA + mpoTensor(opRow * HILBY + braState, opCol * HILBY + ketState) * leftBlock(conjCol, :, opRow + 1) * siteTensor(:, col, ketState);
 						end % opRow
 					end % ketState
 					AWFA = AWFA + conj( siteTensor(conjCol, 1 : colMax, braState) ) * WFA;
