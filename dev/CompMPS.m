@@ -19,8 +19,8 @@ function [ complexMPS ] = CompMPS( HILBY, L, COMPRESS )
 	% Return allocation
 	complexMPS = cell(L,1);
 	% First and last sites
-	complexMPS{1} = rand(1, HILBY, HILBY) + i * rand(1, HILBY, HILBY);
-	complexMPS{L} = rand(HILBY, 1, HILBY) + i * rand(HILBY, 1, HILBY);
+	complexMPS{1} = rand(1, HILBY, HILBY) + 1i * rand(1, HILBY, HILBY);
+	complexMPS{L} = rand(HILBY, 1, HILBY) + 1i * rand(HILBY, 1, HILBY);
 
 	rowSize = HILBY;
 	if L == 3
@@ -34,7 +34,7 @@ function [ complexMPS ] = CompMPS( HILBY, L, COMPRESS )
 		rLen = L - site - 1;
 		len = min(lLen, rLen);
 
-		complexMPS{site} = rand(rowSize, colSize, HILBY) + i * rand(rowSize, colSize, HILBY);
+		complexMPS{site} = rand(rowSize, colSize, HILBY) + 1i * rand(rowSize, colSize, HILBY);
 
 		rowSize = colSize;
 		colSize = min(COMPRESS, HILBY^len);
