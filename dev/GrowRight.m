@@ -19,7 +19,7 @@
 
 function [ updateBlock ] = GrowRight(siteTensor, mpoTensor, rightBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
 	% pre-allocate return array
-	updateBlock = zeros(rowMax, rowMax, OPCOUNT);
+	updateBlock = complex(zeros(rowMax, rowMax, OPCOUNT));
 	
 	% transpose siteTensor to improve inner-loop efficiency
     	tSiteTensor = permute(siteTensor, [2, 1, 3]);
