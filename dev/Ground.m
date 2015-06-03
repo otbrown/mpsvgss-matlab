@@ -20,7 +20,8 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 	L = length(init_mps);
 
 	% initialise variables
-	firstConvFlag= 0;
+	firstConvFlag = 0;
+	secondConvFlag = 0;
 	fullConvFlag = 0;
 	updateCount = 0;
 	direction = 'L';
@@ -80,14 +81,20 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			fprintf('Target Site: %u\n', targetSite);
 			fprintf('Update %u: E = %.5f\n', updateCount, real(energyTracker(end)));
 			if ~firstConvFlag
-				firstConvFlag = ConvTest(energyTracker, 5, 1E-6);
+				firstConvFlag = ConvTest(energyTracker, L, 1E-5);
 				if firstConvFlag
 					filename = sprintf('%dx%dGSSchkpnt', L, HILBY);
 					save(filename, 'init_mps', 'groundMPS', 'energyTracker', '-v7.3');
-					fprintf('First convergence threshold reached, checkpoint created.\n');
+					fprintf('Convergence to 1E-5 reached, checkpoint created.\n');
 					toc(tStart);
 				end
-			else
+			elseif ~secondConvFlag
+				secondConvFlag = ConvTest(energyTracker, L, 1E-7);
+				if secondConvFlag
+					fprint('Convergence to 1E-7 reached.\n');
+					toc(tStart);
+				end
+			else	
 				fullConvFlag = ConvTest(energyTracker, L, THRESHOLD);
 			end
 
