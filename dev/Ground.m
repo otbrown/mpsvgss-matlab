@@ -18,7 +18,8 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 	L = length(init_mps);
 
 	% initialise variables
-	convFlag = 0;
+	firstConvFlag= 0;
+	fullConvFlag = 0;
 	updateCount = 0;
 	direction = 'L';
 	route = 1 : 1 : L;
@@ -40,7 +41,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 	% calculate initial state energy
 	energyTracker = Expect(groundMPS, mpo, 1, right{1}, 1);
 
-	while updateCount < RUNMAX && ~convFlag
+	while updateCount < RUNMAX && ~fullConvFlag
 		for targetSite = route
 			[rowMax, colMax, HILBY] = size(groundMPS{targetSite});
 
@@ -76,10 +77,18 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 
 			fprintf('Target Site: %u\n', targetSite);
 			fprintf('Update %u: E = %.5f\n', updateCount, real(energyTracker(end)));
-			convFlag = ConvTest(energyTracker, L, THRESHOLD);
+			if ~firstConvFlag
+				firstConvFlag = ConvTest(energyTracker, 5, 1E-6);
+				if firstConvFlag
+					filename = sprintf('%dx%dchkpnt', L, HILBY);
+					save(filename, 'init_mps', 'groundMPS', 'energyTracker', '-v7.3');
+				end
+			else
+				fullConvFlag = ConvTest(energyTracker, L, THRESHOLD);
+			end
 
 			% exit the loop if either the system is converged or the maximum number of updates has been reached
-			if convFlag
+			if fullConvFlag
 				fprintf('Converged.\n');
 				break;
 			elseif updateCount >= RUNMAX
