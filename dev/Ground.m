@@ -14,6 +14,8 @@
 % RUNMAX	: double (integer), the maximum number of updates the code should perform before giving up
 
 function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
+	tStart = tic;	
+
 	% gather data from input args
 	L = length(init_mps);
 
@@ -83,6 +85,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 					filename = sprintf('%dx%dGSSchkpnt', L, HILBY);
 					save(filename, 'init_mps', 'groundMPS', 'energyTracker', '-v7.3');
 					fprintf('First convergence threshold reached, checkpoint created.\n');
+					toc(tStart);
 				end
 			else
 				fullConvFlag = ConvTest(energyTracker, L, THRESHOLD);
@@ -91,9 +94,11 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			% exit the loop if either the system is converged or the maximum number of updates has been reached
 			if fullConvFlag
 				fprintf('Converged.\n');
+				toc(tStart);
 				break;
 			elseif updateCount >= RUNMAX
 				fprintf('Failed to converge down to %d.\n', THRESHOLD);
+				toc(tStart);
 				break;
 			end
 		end
