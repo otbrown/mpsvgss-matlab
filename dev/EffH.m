@@ -17,7 +17,7 @@
 function [ effectiveHamiltonian ] = EffH(HILBY, rowMax, colMax, leftBlock, mpoTensor, rightBlock)
 	% pre-allocate
 	dimension = HILBY * rowMax * colMax;
-	effectiveHamiltonian = zeros(dimension, dimension);
+	effectiveHamiltonian = complex(zeros(dimension, dimension));
     
 	% permute left and right blocks
 	leftBlock = permute(leftBlock, [1,3,2]);
