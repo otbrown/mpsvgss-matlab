@@ -19,7 +19,7 @@
 
 function [ updateBlock ] = GrowLeft(siteTensor, mpoTensor, leftBlock, rowMax, colMax, HILBY, opRowMax, opColMax, OPCOUNT)
 	% pre-allocate return array
-	updateBlock = zeros(colMax, colMax, OPCOUNT);
+	updateBlock = complex(zeros(colMax, colMax, OPCOUNT));
 	       
 	% perform contraction
 	for opCol = 0 : 1 : opColMax
