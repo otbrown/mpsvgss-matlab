@@ -80,7 +80,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			if ~firstConvFlag
 				firstConvFlag = ConvTest(energyTracker, 5, 1E-6);
 				if firstConvFlag
-					filename = sprintf('%dx%dchkpnt', L, HILBY);
+					filename = sprintf('%dx%dGSSchkpnt', L, HILBY);
 					save(filename, 'init_mps', 'groundMPS', 'energyTracker', '-v7.3');
 				end
 			else
