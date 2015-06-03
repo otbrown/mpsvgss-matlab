@@ -92,7 +92,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 				fprintf('Converged.\n');
 				break;
 			elseif updateCount >= RUNMAX
-				fprintf('Failed to converge.\n');
+				fprintf('Failed to converge down to %d.\n', THRESHOLD);
 				break;
 			end
 		end
