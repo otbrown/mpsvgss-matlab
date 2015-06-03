@@ -82,6 +82,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 				if firstConvFlag
 					filename = sprintf('%dx%dGSSchkpnt', L, HILBY);
 					save(filename, 'init_mps', 'groundMPS', 'energyTracker', '-v7.3');
+					fprintf('First convergence threshold reached, checkpoint created.\n');
 				end
 			else
 				fullConvFlag = ConvTest(energyTracker, L, THRESHOLD);
