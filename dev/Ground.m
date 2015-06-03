@@ -91,7 +91,7 @@ function [ groundMPS, energyTracker ] = Ground(init_mps, mpo, THRESHOLD, RUNMAX)
 			elseif ~secondConvFlag
 				secondConvFlag = ConvTest(energyTracker, L, 1E-7);
 				if secondConvFlag
-					fprint('Convergence to 1E-7 reached.\n');
+					fprintf('Convergence to 1E-7 reached.\n');
 					toc(tStart);
 				end
 			else	
