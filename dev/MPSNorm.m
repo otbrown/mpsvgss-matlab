@@ -7,7 +7,7 @@
 % normalMPS	: matrix product state which will have a norm of 1 -- ALL sites will be left-normalised
 %
 % [INPUTS]
-% mps		: any arbitrary matrix product state with a local Hilbert space dimension of 2 (this should be changed one day maybe)
+% mps		: any arbitrary matrix product state
 
 function [ normalMPS ] = MPSNorm( mps )
 	L = size( mps, 1 );			% TASHA YAR
