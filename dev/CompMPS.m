@@ -1,15 +1,16 @@
 % CompMPS.m
-% A function to
+% A function to create an arbitrary complex-valued Matrix Product State for a many-body
+% system of the specified size.
 % Oliver Thomson Brown
 % 2015-03-04
 % 
 % [RETURN]
-% complexMPS	: cell array, L * 1, contains a random complex matrix product state
+% complexMPS    : cell array, L * 1, contains a random complex matrix product state
 %
 % [INPUTS]
 % HILBY		: int, dimension of the local state space
-% L		: int, number of sites in the chain
-% COMPRESS	: int, maximum size of on-site matrices, supply 0 returns an exact MPS
+% L         : int, number of sites in the chain
+% COMPRESS	: int, maximum size of on-site matrices, supplying 0 returns an exact MPS
 
 function [ complexMPS ] = CompMPS( HILBY, L, COMPRESS )
 	if COMPRESS == 0
