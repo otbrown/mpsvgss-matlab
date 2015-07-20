@@ -121,7 +121,7 @@ psi332(25) = mps332{1}(:,:,3) * mps332{2}(:,:,3) * mps332{3}(:,:,1);
 psi332(26) = mps332{1}(:,:,3) * mps332{2}(:,:,3) * mps332{3}(:,:,2);
 psi332(27) = mps332{1}(:,:,3) * mps332{2}(:,:,3) * mps332{3}(:,:,3);
 
-% assert that state-vectors are normalised
+%% norm-check 
 assert(abs(ctranspose(psi230)*psi230 - 1) <= tol, 'Error: MPSNorm failing to normalise to within 1E-12 tolerance');
 assert(abs(ctranspose(psi240)*psi240 - 1) <= tol, 'Error: MPSNorm failing to normalise to within 1E-12 tolerance');
 assert(abs(ctranspose(psi330)*psi330 - 1) <= tol, 'Error: MPSNorm failing to normalise to within 1E-12 tolerance');
