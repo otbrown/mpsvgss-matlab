@@ -17,7 +17,7 @@ mps5515 = CompMPS(5, 5, 15);
 % no actual floating point testing here because we're just checking size, shape, and types, so tol = 0
 tol = 0;
 
-% test outputs are correct type
+%% type-check
 assert(isa(mps270,'cell'), 'Fundamental problem: CompMPS is not returning cell arrays.');
 assert(isa(mps360,'cell'), 'Fundamental problem: CompMPS is not returning cell arrays.');
 assert(isa(mps450,'cell'), 'Fundamental problem: CompMPS is not returning cell arrays.');
@@ -27,7 +27,7 @@ assert(isa(mps366,'cell'), 'Fundamental problem: CompMPS is not returning cell a
 assert(isa(mps4512,'cell'), 'Fundamental problem: CompMPS is not returning cell arrays.');
 assert(isa(mps5515,'cell'), 'Fundamental problem: CompMPS is not returning cell arrays.');
 
-% test outputs are correct shape
+%% cell-shape-check
 sz270 = size(mps270);
 assert(sz270(1) == 7, 'Fundamental problem: CompMPS is returning cell arrays of the wrong shape.');
 assert(sz270(2) == 1, 'Fundamental problem: CompMPS is returning cell arrays of the wrong shape.');
@@ -53,7 +53,7 @@ sz5515 = size(mps5515);
 assert(sz5515(1) == 5, 'Fundamental problem: CompMPS is returning cell arrays of the wrong shape.');
 assert(sz5515(2) == 1, 'Fundamental problem: CompMPS is returning cell arrays of the wrong shape.');
 
-% test CompMPS is providing a complex-valued MPS
+%% complex-check
 for site = 1 : 1 : length(mps270)
     A = mps270{site};
     assert(~isreal(A), 'Error: CompMPS is returning real-valued matrices');
@@ -87,7 +87,7 @@ for site = 1 : 1 : length(mps5515)
     assert(~isreal(A), 'Error: CompMPS is returning real-valued matrices');
 end
 
-% test the matrices in the mps are consistently sized -- the method used here is complex, but definitely correct
+%% matrix-shape-check
 testSizes(mps270, 2, 0);
 testSizes(mps360, 3, 0);
 testSizes(mps450, 4, 0);
