@@ -6,29 +6,57 @@
 
 classdef CanTest < matlab.unittest.TestCase
 
-    properties (TestParameter)
-        HILBY = [2, 2, 3, 4, 5, 2, 3, 4, 5];
-        mpsLength = [5, 7, 6, 5, 5, 7, 6, 5, 5];
-        COMPRESS = [0, 0, 0, 0, 0, 2, 6, 12, 15]; 
+    properties
+        absTol = 1E-14;
+        testMPS;
+        testMPSLength;
+        testHILBY;
     end
 
-    methods (Test, ParameterCombination='sequential')
-        function testLNorm(testCase, HILBY, mpsLength, COMPRESS)
-            absTol = 1E-14;
+    properties (MethodSetupParameter)
+        HILBY = {2, 2, 3, 4, 5, 2, 3, 4, 5};
+        mpsLength = {5, 7, 6, 5, 5, 7, 6, 5, 5};
+        COMPRESS = {0, 0, 0, 0, 0, 2, 6, 12, 15};
+    end
+
+    methods (TestMethodSetup, ParameterCombination='sequential')
+        function MethodSetup(testCase, HILBY, mpsLength, COMPRESS)
             % create mps
-            mps = CompMPS(HILBY, mpsLength, COMPRESS);
-            % bring in to left-canonical form
-            mps = Can(mps, 1 : 1 : (mpsLength - 1), 'L');
-            % for each site and local state, assert A'*A = I
-            for site = 1 : 1 : (mpsLength - 1)
-                matrix = mps{site};
-                for localState = 1 : 1 : HILBY
-                    colSz = size(matrix, 2);
-                    hermProd = ctranspose(matrix) * matrix;
-                    testCase.assertEqual(hermProd, eye(colSz), 'AbsTol', absTol);
-                end
-            end
+            testCase.testMPS = CompMPS(HILBY, mpsLength, COMPRESS);
+            testCase.testMPSLength = mpsLength;
+            testCase.testHILBY = HILBY;
         end
     end
 
-end   
+    methods (Test)
+        function testLNorm(testCase)
+            % bring in to left-canonical form
+            testCase.testMPS = Can(testCase.testMPS, 1 : 1 : (testCase.testMPSLength - 1), 'L');
+            % for each site and local state, assert A'*A = I
+            for site = 1 : 1 : (testCase.testMPSLength - 1)
+                matrix = testCase.testMPS{site};
+                for localState = 1 : 1 : testCase.testHILBY
+                    colSz = size(matrix, 2);
+                    hermProd = ctranspose(matrix(:, :, localState)) * matrix(:, :, localState);
+                    testCase.assertEqual(hermProd, eye(colSz), 'AbsTol', testCase.absTol);
+                end
+            end
+        end
+
+        function testRNorm(testCase)
+            % bring in to right-canonical form
+            testCase.testMPS = Can(testCase.testMPS, testCase.testMPSLength : -1 : 2, 'R');
+            % for each site and local state assert A*A' = I
+            for site = testCase.testMPSLength : -1 : 2
+                matrix = testCase.testMPS{site};
+                for localState = 1 : 1 : testCase.testHILBY
+                    rowSz = size(matrix, 1);
+                    hermProd = matrix(:, :, localState) * ctranspose(matrix(:, :, localState));
+                    testCase.assertEqual(hermProd, eye(rowSz), 'AbsTol', testCase.absTol);
+                end
+            end
+        end
+
+    end
+
+end
