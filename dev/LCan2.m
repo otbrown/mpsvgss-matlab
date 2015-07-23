@@ -13,9 +13,10 @@
 % route		: vector containing sites which are to be canonised, if whole chain is to be canonised 
 %		  route should be 1 : 1 : L-1 where L is the length of the chain
 
-function [lmps] = LCan(mps, route)
+function [lmps] = LCan2(mps, route)
     % RETURN ALLOCATION
     lmps = mps;
+    HILBY = size(lmps{1}, 3);
     
     for site = route		
         for localState = 1 : 1 : HILBY
