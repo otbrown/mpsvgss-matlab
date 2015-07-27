@@ -16,10 +16,11 @@
 function [lmps] = LCan2(mps, route)
     % RETURN ALLOCATION
     lmps = mps;
-    [rowSz, colSz, HILBY] = size(lmps{route(1)});
+    HILBY = size(lmps{1}, 3);
     
     for site = route		
         for localState = 1 : 1 : HILBY
+            [rowSz, colSz, ~] = size(lmps{site});
             [U, S, V] = svd(lmps{site}(:, :, localState));
             lmps{site}(:, :, localState) = U(1 : rowSz, 1 : colSz);
 
