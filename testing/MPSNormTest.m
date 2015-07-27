@@ -3,6 +3,7 @@
 % Oliver Thomson Brown
 % 2015-07-17
 
+%% setup
 % test matrix product states -- CompMPS calls MPSNorm just before returning
 mps230 = CompMPS(2, 3, 0);
 mps240 = CompMPS(2, 4, 0);
