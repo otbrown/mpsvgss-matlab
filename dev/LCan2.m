@@ -16,16 +16,17 @@
 function [lmps] = LCan2(mps, route)
     % RETURN ALLOCATION
     lmps = mps;
-    HILBY = size(lmps{1}, 3);
+    [rowSz, colSz, HILBY] = size(lmps{route(1)});
     
     for site = route		
         for localState = 1 : 1 : HILBY
             [U, S, V] = svd(lmps{site}(:, :, localState));
-            lmps{site}(:, :, localState) = U;
+            lmps{site}(:, :, localState) = U(1 : rowSz, 1 : colSz);
 
+            [rowSz, colSz, ~] = size(lmps{site + 1});
             chain = S * ctranspose(V);
-            lmps{site + 1}(:, :, localState) = ...
-                chain * lmps{site+1}(:, :, localState);
+            N = chain * lmps{site+1}(:, :, localState);
+            lmps{site + 1}(:, :, localState) = N(1 : rowSz, 1 : colSz);
         end 
     end
 end
