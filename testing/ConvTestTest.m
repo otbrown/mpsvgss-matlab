@@ -4,6 +4,8 @@
 % 2015-07-17
 
 % setup
+% add path
+addpath('../dev/');
 % test energyTracker arrays
 eT20 = ones(20,1);
 eT20m12 = ones(20,1) + 1E-12 * rand(20,1);
