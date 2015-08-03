@@ -4,7 +4,7 @@
 % Oliver Thomson Brown
 % 15-07-20
 
-classdef CanTest < matlab.unittest.TestCase
+classdef (SharedTestFixtures={matlab.unittest.fixtures.PathFixture('../dev')}) CanTest < matlab.unittest.TestCase
 
     properties
         absTol = 1E-14;
@@ -29,34 +29,51 @@ classdef CanTest < matlab.unittest.TestCase
     end
 
     methods (Test)
-        function testLNorm(testCase)
+        %function testLNorm(testCase)
+        %    % bring in to left-canonical form
+        %    testCase.testMPS = Can(testCase.testMPS, 1 : 1 : (testCase.testMPSLength - 1), 'L');
+        %    % for each site and local state, assert A'*A = I
+        %    for site = 1 : 1 : (testCase.testMPSLength - 1)
+        %        matrix = testCase.testMPS{site};
+        %        for localState = 1 : 1 : testCase.testHILBY
+        %            colSz = size(matrix, 2);
+        %            hermProd = ctranspose(matrix(:, :, localState)) * matrix(:, :, localState);
+        %            testCase.assertEqual(hermProd, eye(colSz), 'AbsTol', testCase.absTol);
+        %        end
+        %    end
+        %end
+
+        %function testRNorm(testCase)
+        %    % bring in to right-canonical form
+        %    testCase.testMPS = Can(testCase.testMPS, testCase.testMPSLength : -1 : 2, 'R');
+        %    % for each site and local state assert A*A' = I
+        %    for site = testCase.testMPSLength : -1 : 2
+        %        matrix = testCase.testMPS{site};
+        %        for localState = 1 : 1 : testCase.testHILBY
+        %            rowSz = size(matrix, 1);
+        %            hermProd = matrix(:, :, localState) * ctranspose(matrix(:, :, localState));
+        %            testCase.assertEqual(hermProd, eye(rowSz), 'AbsTol', testCase.absTol);
+        %        end
+        %    end
+        %end
+
+        function testNormL(testCase)
             % bring in to left-canonical form
             testCase.testMPS = Can(testCase.testMPS, 1 : 1 : (testCase.testMPSLength - 1), 'L');
-            % for each site and local state, assert A'*A = I
-            for site = 1 : 1 : (testCase.testMPSLength - 1)
-                matrix = testCase.testMPS{site};
-                for localState = 1 : 1 : testCase.testHILBY
-                    colSz = size(matrix, 2);
-                    hermProd = ctranspose(matrix(:, :, localState)) * matrix(:, :, localState);
-                    testCase.assertEqual(hermProd, eye(colSz), 'AbsTol', testCase.absTol);
-                end
-            end
+            % rebuild state-vector and assert psi' * psi = 1
+            stateVec = Rebuild(testCase.testMPS);
+            norm = ctranspose(stateVec) * stateVec;
+            testCase.assertEqual(norm, 1, 'AbsTol', testCase.absTol);
         end
 
-        function testRNorm(testCase)
+        function testNormR(testCase)
             % bring in to right-canonical form
             testCase.testMPS = Can(testCase.testMPS, testCase.testMPSLength : -1 : 2, 'R');
-            % for each site and local state assert A*A' = I
-            for site = testCase.testMPSLength : -1 : 2
-                matrix = testCase.testMPS{site};
-                for localState = 1 : 1 : testCase.testHILBY
-                    rowSz = size(matrix, 1);
-                    hermProd = matrix(:, :, localState) * ctranspose(matrix(:, :, localState));
-                    testCase.assertEqual(hermProd, eye(rowSz), 'AbsTol', testCase.absTol);
-                end
-            end
+            % rebuild state-vector and assert norm equal to 1
+            stateVec = Rebuild(testCase.testMPS);
+            norm = ctranspose(stateVec) * stateVec;
+            testCase.assertEqual(norm, 1, 'AbsTol', testCase.absTol);
         end
-
     end
 
 end
