@@ -1,5 +1,5 @@
 % Rebuild.m
-% function which rebuilds the explicit (sparse) state vector from the MPS form -- HILBY = 2 ONLY
+% function to rebuild a state-vector from a matrix product state
 % !IMPORTANT NOTE!: for debugging use only -- this will *never* be efficient! 
 % Oliver Thomson Brown
 % 16/10/2014
@@ -9,16 +9,17 @@
 % epsilon	: d^L double array, contains the difference between the 'real' state vector and the rebuilt one OPTIONAL
 %
 % [INPUTS]
-% matrices	: L by 1 cell array, contains the MPS coefficient matrices
+% mps	: L by 1 cell array, contains the MPS coefficient matrices
 % init		: d^L double array, contains the initial state vector which was decomposed
 
-function [state, varargout] = Rebuild(matrices, varargin)
+function [state, varargout] = Rebuild(mps, varargin)
 	% INPUT/RETURN CHECKS & TIDY-UP 
 	nargoutchk(0,2);	
 	narginchk(1,2);			% checks number of arguments for input and output
 
-	L = size(matrices, 1);
-	SPACE = 2^L;
+	L = size(mps, 1);
+    HILBY = size(mps{1}, 3);
+	SPACE = HILBY^L;
 	
 	if nargout == 2
 		if nargin == 1
@@ -31,33 +32,42 @@ function [state, varargout] = Rebuild(matrices, varargin)
 				init = init / sqrt(normCheck);
 			end
 		end
-		epsilon = sparse(SPACE,1);
+		epsilon = complex(zeros(SPACE,1));
 	end
 
-	state = sparse(SPACE, 1);
-			
-	% FORM BASIS STATES AND BINARY COMBINATIONS -- SCALES HORRIBLY
-	bins = zeros( SPACE, L, 'uint8' );	% SPACE by L uint8 array, will contain binary combos
-	comp = speye( SPACE );       		% computational basis states in sparse form
+	state = complex(zeros(SPACE, 1));
 
-	for sigma = 1 : SPACE			% form all possible binary combinations
-	    bins( sigma, : ) = double( dec2bin( sigma-1, L ) - 48 );
-	end
-	bins = flipud(bins);    		% binary ordering matches colwise comp states
+    % set coefft = 1, and create storage for selected matrices
+    coefft = 1;
+    stateMat = cell(L, 1);
 
-	% REBUILD STATE VECTOR -- SCALES HORRIBLYER	
-	for sigma = 1 : SPACE
-	    coefft = 1 ;
-	    
-	    for site = 1 : 1 : L
-		coefft = coefft*matrices{site}(:, :, 2^bins(sigma , site));
-	    end
-	    
-	    state = state + coefft*comp(:, sigma);
-	end
-
+    % create all 0's coefficient, since it's base HILBY representation is obvious
+    for site = 1 : 1 :  L
+        stateMat{site} = mps{site}(:, :, 1);
+    end
+    for site = 1 : 1 : L
+        coefft = coefft * stateMat{site};
+    end
+    state(1) = coefft;
+    
+    % REBUILD STATE VECTOR
+    for stateDex = 2 : 1 : SPACE
+        coefft = 1;
+        % generate string which is the base HILBY decomposition of stateDex
+        localStr = dec2base(stateDex - 1, HILBY, L);
+        % locate correct matrices from mps
+        for site = 1 : 1 : L
+            stateMat{site} = mps{site}(:, :, str2num(localStr(site)) + 1 );
+        end
+        % multiply them to obtain the coefficient
+        for site = 1 : 1 : L
+            coefft = coefft * stateMat{site};
+        end
+        state(stateDex) = coefft;
+    end
+    
 	if nargout == 2
 		epsilon = abs(state - init);
 		varargout{1} = epsilon;		% varargout{1} is the difference between the rebuilt and original states 
-	end
+	end        
 end
