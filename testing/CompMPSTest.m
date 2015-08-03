@@ -3,7 +3,7 @@
 % Oliver Thomson Brown
 % 2015-07-17
 
-classdef CompMPSTest < matlab.unittest.TestCase
+classdef (SharedTestFixtures={matlab.unittest.fixtures.PathFixture('../dev')}) CompMPSTest < matlab.unittest.TestCase
 
     properties
         testMPS;
