@@ -17,25 +17,36 @@ function [lmps] = LCan(mps, route)
 	% RETURN ALLOCATION
 	lmps = mps;
 	
-    [rowMax, colMax, HILBY] = size(lmps{route(1)});
-    
+    %[rowSz, colSz, HILBY] = size(lmps{route(1)});
+    HILBY = size(lmps{1}, 3);    
+
 	for site = route		
+        [rowSz, colSz, ~] = size(lmps{site});
+
 		perm = permute(lmps{site}, [1, 3, 2]);
-		M = reshape(perm, [HILBY * rowMax, colMax]);
-		[U, S, V] = svd(M);
+		M = reshape(perm, [HILBY * rowSz, colSz]);
+		%[U, S, V] = svd(M, 0);
 
-		U = U(1 : (HILBY * rowMax), 1 : colMax);
-		reshU = reshape(U, [rowMax, HILBY, colMax]);
-		lmps{site} = permute(reshU, [1, 3, 2]);
+		%U = U(1 : (HILBY * rowSz), 1 : colSz);
+		%reshU = reshape(U, [rowSz, HILBY, colSz]);
+		%lmps{site} = permute(reshU, [1, 3, 2]);
 
-		chain = S * ctranspose(V);
+		%chain = S * ctranspose(V);
 
-		rowMax = colMax;
-		colMax = size(lmps{site + 1}(:,:,1), 2);
+		%rowSz = colSz;
+		%colSz = size(lmps{site + 1}(:,:,1), 2);
 		
-		for localState = 1 : 1 : HILBY
-			N = chain * lmps{site+1}(:, :, localState);
-			lmps{site + 1}(:, :, localState) = N(1 : rowMax, 1 : colMax);
-		end 
+		%for localState = 1 : 1 : HILBY
+		%	N = chain * lmps{site+1}(:, :, localState);
+		%	lmps{site + 1}(:, :, localState) = N(1 : rowSz, 1 : colSz);
+		%end 
+
+        [Q, R] = qr(M, 0);
+
+        lmps{site} = permute(reshape(Q, [rowSz, HILBY, colSz]), [1, 3, 2]);
+
+        for localState = 1 : 1 : HILBY
+            lmps{site + 1}(:, :, localState) = R * lmps{site + 1}(:, :, localState);
+        end 
 	end
 end
