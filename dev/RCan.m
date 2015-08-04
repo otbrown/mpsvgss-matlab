@@ -17,25 +17,25 @@ function [rmps] = RCan(mps, route)
 	% RETURN ALLOCATION
 	rmps = mps;
     
-    [rowMax, colMax, HILBY] = size(rmps{route(1)});
+    [rowSz, colSz, HILBY] = size(rmps{route(1)});
 	
     for site = route		
-        M = reshape(rmps{site}, [rowMax, colMax * HILBY]);
-		[U, S, V] = svd(M);
+        M = reshape(rmps{site}, [rowSz, colSz * HILBY]);
+		[U, S, V] = svd(M,0);
 
 		V = ctranspose(V);
-        V = V(1 : rowMax, 1 : (colMax * HILBY));
+        V = V(1 : rowSz, 1 : (colSz * HILBY));
 
-        rmps{site} = reshape(V, [rowMax, colMax, HILBY]);
+        rmps{site} = reshape(V, [rowSz, colSz, HILBY]);
 
 		chain = U * S;
 
-        colMax = rowMax;
-        rowMax = size(rmps{site - 1}(:,:,1), 1); 
+        colSz = rowSz;
+        rowSz = size(rmps{site - 1}(:,:,1), 1); 
 
         for localState = 1 : 1 : HILBY
             N = rmps{site - 1}(:, :, localState) * chain;
-            rmps{site - 1}(:, :, localState) = N(1 : rowMax, 1 : colMax);
+            rmps{site - 1}(:, :, localState) = N(1 : rowSz, 1 : colSz);
         end
     end
 end
