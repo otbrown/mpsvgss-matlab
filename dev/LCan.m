@@ -17,29 +17,12 @@ function [lmps] = LCan(mps, route)
 	% RETURN ALLOCATION
 	lmps = mps;
 	
-    %[rowSz, colSz, HILBY] = size(lmps{route(1)});
     HILBY = size(lmps{1}, 3);    
 
 	for site = route		
         [rowSz, colSz, ~] = size(lmps{site});
 
-		perm = permute(lmps{site}, [1, 3, 2]);
-		M = reshape(perm, [HILBY * rowSz, colSz]);
-		%[U, S, V] = svd(M, 0);
-
-		%U = U(1 : (HILBY * rowSz), 1 : colSz);
-		%reshU = reshape(U, [rowSz, HILBY, colSz]);
-		%lmps{site} = permute(reshU, [1, 3, 2]);
-
-		%chain = S * ctranspose(V);
-
-		%rowSz = colSz;
-		%colSz = size(lmps{site + 1}(:,:,1), 2);
-		
-		%for localState = 1 : 1 : HILBY
-		%	N = chain * lmps{site+1}(:, :, localState);
-		%	lmps{site + 1}(:, :, localState) = N(1 : rowSz, 1 : colSz);
-		%end 
+		M = reshape(permute(lmps{site}, [1, 3, 2]), [HILBY * rowSz, colSz]);
 
         [Q, R] = qr(M, 0);
 
