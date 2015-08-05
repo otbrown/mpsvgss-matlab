@@ -53,9 +53,7 @@ classdef (SharedTestFixtures={matlab.unittest.fixtures.PathFixture('../dev/')}) 
                 effectiveHamiltonian = EffH(testCase.testHILBY, rowSz, colSz, testCase.lBlock{site}, testCase.testMPO.mpo{mpodex}, testCase.rBlock{site});
 
                 % assert H - H' = 0
-                effHSz = size(effectiveHamiltonian);
-                hermTest = effectiveHamiltonian - ctranspose(effectiveHamiltonian);
-                testCase.assertEqual(hermTest, zeros(effHSz), 'AbsTol', testCase.absTol);
+                testCase.assertEqual(effectiveHamiltonian, ctranspose(effectiveHamiltonian), 'AbsTol', testCase.absTol);
             end
         end
     end
