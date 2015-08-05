@@ -10,38 +10,27 @@
 % mps		: any arbitrary matrix product state
 
 function [ normalMPS ] = MPSNorm( mps )
-	L = size( mps, 1 );			% TASHA YAR
+	LENGTH = size(mps, 1);			% TASHA YAR
+    HILBY = size(mps{1}, 3);
 	normalMPS = mps;
     
-    [rowMax, colMax, HILBY] = size(normalMPS{1});
+    for site = 1 : 1 : LENGTH - 1
+        [rowSz, colSz, ~] = size(normalMPS{site});
 
-	for site = 1 : 1 : L - 1	
-		perm = permute(normalMPS{site}, [1, 3, 2]);
-		M = reshape(perm, [HILBY * rowMax, colMax]);
-		[U, S, V] = svd(M);
+        M = reshape(permute(normalMPS{site}, [1, 3, 2]), [HILBY * rowSz, colSz]);
 
-		U = U(1 : (HILBY * rowMax), 1 : colMax);
-		reshU = reshape(U, [rowMax, HILBY, colMax]);
-		normalMPS{site} = permute(reshU, [1, 3, 2]);
+        [Q, R] = qr(M, 0);
 
-		chain = S * ctranspose(V);
+        normalMPS{site} = permute(reshape(Q, [rowSz, HILBY, colSz]), [1, 3, 2]);
 
-		rowMax = colMax;
-		colMax = size(normalMPS{site + 1}(:,:,1), 2);
-		
-		for localState = 1 : 1 : HILBY
-			N = chain * normalMPS{site+1}(:, :, localState);
-			normalMPS{site + 1}(:, :, localState) = N(1 : rowMax, 1 : colMax);
-		end 
-	end
+        for localState = 1 : 1 : HILBY
+            normalMPS{site + 1}(:, :, localState) = R * normalMPS{site + 1}(:, :, localState);
+        end
+    end
 
-        [rowMax, colMax, HILBY] = size(normalMPS{L});
-		
-		perm = permute(normalMPS{L}, [1, 3, 2]);
-		M = reshape(perm, [HILBY * rowMax, colMax]);
-		[U, S, V] = svd(M);
+    M = reshape(permute(normalMPS{LENGTH}, [1, 3, 2]), [HILBY^2, 1]);
 
-		U = U(1 : (HILBY * rowMax), 1 : colMax);
-		reshU = reshape(U, [rowMax, HILBY, colMax]);
-		normalMPS{L} = permute(reshU, [1, 3, 2]);
+    [Q, ~] = qr(M, 0);
+
+    normalMPS{LENGTH} = permute(reshape(Q, [HILBY, HILBY, 1]), [1, 3, 2]);
 end 
