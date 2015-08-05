@@ -2,7 +2,7 @@
 % a class to test the function Can.m or more specifically,
 % its sub-functions LCan.m and RCan.m
 % Oliver Thomson Brown
-% 15-07-20
+% 2015-07-20
 
 classdef (SharedTestFixtures={matlab.unittest.fixtures.PathFixture('../dev')}) CanTest < matlab.unittest.TestCase
 
@@ -29,50 +29,64 @@ classdef (SharedTestFixtures={matlab.unittest.fixtures.PathFixture('../dev')}) C
     end
 
     methods (Test)
-        %function testLNorm(testCase)
-        %    % bring in to left-canonical form
-        %    testCase.testMPS = Can(testCase.testMPS, 1 : 1 : (testCase.testMPSLength - 1), 'L');
-        %    % for each site and local state, assert A'*A = I
-        %    for site = 1 : 1 : (testCase.testMPSLength - 1)
-        %        matrix = testCase.testMPS{site};
-        %        for localState = 1 : 1 : testCase.testHILBY
-        %            colSz = size(matrix, 2);
-        %            hermProd = ctranspose(matrix(:, :, localState)) * matrix(:, :, localState);
-        %            testCase.assertEqual(hermProd, eye(colSz), 'AbsTol', testCase.absTol);
-        %        end
-        %    end
-        %end
-
-        %function testRNorm(testCase)
-        %    % bring in to right-canonical form
-        %    testCase.testMPS = Can(testCase.testMPS, testCase.testMPSLength : -1 : 2, 'R');
-        %    % for each site and local state assert A*A' = I
-        %    for site = testCase.testMPSLength : -1 : 2
-        %        matrix = testCase.testMPS{site};
-        %        for localState = 1 : 1 : testCase.testHILBY
-        %            rowSz = size(matrix, 1);
-        %            hermProd = matrix(:, :, localState) * ctranspose(matrix(:, :, localState));
-        %            testCase.assertEqual(hermProd, eye(rowSz), 'AbsTol', testCase.absTol);
-        %        end
-        %    end
-        %end
 
         function testNormL(testCase)
             % bring in to left-canonical form
             testCase.testMPS = Can(testCase.testMPS, 1 : 1 : (testCase.testMPSLength - 1), 'L');
-            % rebuild state-vector and assert psi' * psi = 1
-            stateVec = Rebuild(testCase.testMPS);
-            norm = ctranspose(stateVec) * stateVec;
+            % build identity mpo
+            impo = [{eye(testCase.testHILBY)};{eye(testCase.testHILBY)};{eye(testCase.testHILBY)}];
+            % build left contraction to last site
+            lBlock = cell(testCase.testMPSLength, 1);
+            lBlock{1} = 1;
+            for site = 2 : testCase.testMPSLength
+                lBlock{site} = GrowBlock(testCase.testMPS, impo, ...
+                    (site - 1), 'L', lBlock);
+            end
+            % calculate norm of mps
+            norm = Expect(testCase.testMPS, impo, lBlock{testCase.testMPSLength}, 1, testCase.testMPSLength);
+            % assert norm == 1
             testCase.assertEqual(norm, 1, 'AbsTol', testCase.absTol);
+        end
+        
+        function testStateL(testCase)
+            % rebuild state vector
+            stateVec_init = Rebuild(testCase.testMPS);
+            % bring in to left-canonical form
+            testCase.testMPS = Can(testCase.testMPS, 1 : 1 : (testCase.testMPSLength - 1), 'L');
+            % build new state vector
+            stateVec_L = Rebuild(testCase.testMPS);
+            % assert they are the same up to some phase (imaginary
+            % components may differ)
+            testCase.assertEqual(abs(stateVec_init), abs(stateVec_L), 'AbsTol', testCase.absTol);
         end
 
         function testNormR(testCase)
             % bring in to right-canonical form
             testCase.testMPS = Can(testCase.testMPS, testCase.testMPSLength : -1 : 2, 'R');
-            % rebuild state-vector and assert norm equal to 1
-            stateVec = Rebuild(testCase.testMPS);
-            norm = ctranspose(stateVec) * stateVec;
+            % build identity mpo
+            impo = [{eye(testCase.testHILBY)};{eye(testCase.testHILBY)};{eye(testCase.testHILBY)}];
+            % build right contraction to first site
+            rBlock = cell(testCase.testMPSLength, 1);
+            rBlock{testCase.testMPSLength} = 1;
+            for site = testCase.testMPSLength - 1 : -1 : 1
+                rBlock{site} = GrowBlock(testCase.testMPS, impo, ...
+                    (site + 1), 'R', rBlock);
+            end
+            % calculate norm of mps
+            norm = Expect(testCase.testMPS, impo, 1, rBlock{1}, 1);
+            % assert norm == 1
             testCase.assertEqual(norm, 1, 'AbsTol', testCase.absTol);
+        end
+        
+        function testStateR(testCase)
+            % rebuild state vector
+            stateVec_init = Rebuild(testCase.testMPS);
+            % bring in to right-canonical form
+            testCase.testMPS = Can(testCase.testMPS, testCase.testMPSLength : -1 : 2, 'R');
+            % build new state vector
+            stateVec_R = Rebuild(testCase.testMPS);
+            % assert they are the same up to some phase difference
+            testCase.assertEqual(abs(stateVec_init), abs(stateVec_R), 'AbsTol', testCase.absTol);
         end
     end
 
